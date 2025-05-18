@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
+import DashboardDev from "./pages/DashboardDev";
 
 const queryClient = new QueryClient();
 
@@ -26,7 +27,9 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            {/* Comment out the original Dashboard route and use DashboardDev instead */}
+            {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+            <Route path="/dashboard" element={<DashboardDev />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
