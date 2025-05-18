@@ -65,7 +65,7 @@ const ActionableIntelligence = () => {
         </CardContent>
       </Card>
 
-      <h2 className="text-xl font-semibold mt-6 mb-4 text-gray-700 col-span-1 md:col-span-2">My Contacts</h2>
+      <h2 className="text-xl font-semibold mb-4 text-gray-700 col-span-1 md:col-span-2">My Contacts</h2>
       
       <Card className="shadow-md">
         <CardHeader className="pb-2">
