@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuth } from "@/contexts/AuthContext";
 
 const signUpSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -28,13 +27,6 @@ type SignUpFormValues = z.infer<typeof signUpSchema>;
 const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
-
-  useEffect(() => {
-    if (user) {
-      navigate("/dashboard");
-    }
-  }, [user, navigate]);
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -70,8 +62,11 @@ const SignUp = () => {
         // Sign user out to ensure clean state before redirecting to login
         await supabase.auth.signOut();
         
-        // Redirect to login page with email prefilled
-        navigate(`/login?email=${encodeURIComponent(values.email)}`);
+        // Add a small delay to ensure sign out completes before redirecting
+        setTimeout(() => {
+          // Redirect to login page with email prefilled
+          navigate(`/login?email=${encodeURIComponent(values.email)}`);
+        }, 100);
       }
     } catch (err) {
       toast.error("An unexpected error occurred");
