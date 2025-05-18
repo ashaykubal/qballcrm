@@ -31,7 +31,7 @@ const DashboardHeader = ({ title }: DashboardHeaderProps) => {
                   className="bg-white hover:bg-gray-100 active:bg-gray-200 rounded-xl p-3 h-16 w-16 border-2 border-[#1A1F2C]/30 flex items-center justify-center shadow-sm"
                   aria-label="Dashboard options"
                 >
-                  <Home className="h-12 w-12 text-[#9b87f5]" />
+                  <Home className="h-32 w-32 text-[#9b87f5]" />
                 </Button>
               </DropdownMenuTrigger>
             </TooltipTrigger>
