@@ -19,7 +19,7 @@ const Login = () => {
   return (
     <MainLayout>
       <div className="flex items-center justify-center min-h-[80vh] px-4 bg-gradient-to-br from-blue-50 to-purple-50">
-        <Card className="w-full max-w-md shadow-lg border-opacity-50">
+        <Card className="w-full max-w-md shadow-lg border-opacity-50 rounded-xl overflow-hidden">
           <CardHeader className="space-y-1 bg-gradient-to-b from-white to-gray-50 py-4">
             <CardTitle className="text-xl font-bold text-center">Login</CardTitle>
             <CardDescription className="text-center text-sm">
@@ -39,6 +39,7 @@ const Login = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="rounded-md"
                 />
               </div>
               <div className="space-y-2">
@@ -56,9 +57,10 @@ const Login = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className="rounded-md"
                 />
               </div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full rounded-md">
                 Sign In
               </Button>
             </form>
