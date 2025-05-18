@@ -26,20 +26,30 @@ const Login = () => {
   const [loginSuccess, setLoginSuccess] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, isFullyInitialized } = useAuth();
 
   // Extract email from URL query params if present
   const queryParams = new URLSearchParams(location.search);
   const emailFromSignup = queryParams.get('email') || '';
 
+  // Check if we should redirect authenticated users away from login page
+  useEffect(() => {
+    if (isFullyInitialized && user) {
+      console.log("Already authenticated, redirecting to dashboard");
+      navigate("/dashboard");
+    }
+  }, [user, isFullyInitialized, navigate]);
+
   useEffect(() => {
     // Only navigate to dashboard if we're sure the user is authenticated
     // and we've already confirmed successful login
-    if (user && loginSuccess) {
-      console.log("User authenticated, navigating to dashboard");
+    if (user && loginSuccess && isFullyInitialized) {
+      console.log("User authenticated and login successful, navigating to dashboard");
+      // Set a flag in localStorage to help prevent redirect loops
+      localStorage.setItem('loginSuccess', 'true');
       navigate("/dashboard");
     }
-  }, [user, loginSuccess, navigate]);
+  }, [user, loginSuccess, navigate, isFullyInitialized]);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),

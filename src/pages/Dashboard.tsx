@@ -8,30 +8,47 @@ import ActionableIntelligence from "@/components/dashboard/ActionableIntelligenc
 import DashboardNav from "@/components/dashboard/DashboardNav";
 
 const Dashboard = () => {
-  const { user, loading, session } = useAuth();
+  const { user, loading, session, isFullyInitialized } = useAuth();
   const navigate = useNavigate();
   const [authCheckCount, setAuthCheckCount] = useState(0);
   
   useEffect(() => {
-    // Only redirect after we're sure auth state is settled
-    // and the user is definitely not authenticated after multiple checks
-    if (!loading) {
+    // Only perform checks after auth system is fully initialized
+    if (isFullyInitialized && !loading) {
+      // If no user and no session after full initialization, handle redirect
       if (!user && !session) {
-        // Increase the check count to verify this isn't a temporary state
-        setAuthCheckCount((prevCount) => prevCount + 1);
+        console.log(`Dashboard auth check #${authCheckCount + 1}: No user or session found`);
         
-        // Only redirect after several checks confirm the user isn't authenticated
-        if (authCheckCount > 1) {
+        // Use setTimeout to delay the check increment to allow for auth state to stabilize
+        setTimeout(() => {
+          setAuthCheckCount((prevCount) => prevCount + 1);
+        }, 300);
+        
+        // Only redirect after multiple checks confirm the user isn't authenticated
+        if (authCheckCount >= 3) {
+          console.log("Multiple checks confirm no auth, redirecting to login");
           navigate("/login");
         }
       } else {
-        // Reset counter if user is found
+        // User is authenticated, reset counter
+        console.log("Dashboard: User is authenticated", user?.email);
         setAuthCheckCount(0);
       }
     }
-  }, [user, session, loading, navigate, authCheckCount]);
+  }, [user, session, loading, navigate, authCheckCount, isFullyInitialized]);
 
-  if (loading || (authCheckCount <= 1 && !user)) {
+  // Check local storage for login status to prevent redirect loop
+  useEffect(() => {
+    const loginSuccessFlag = localStorage.getItem('loginSuccess') === 'true';
+    
+    if (loginSuccessFlag && user) {
+      console.log("Login success flag found, ensuring we stay on dashboard");
+      // Clear the flag after we've used it
+      localStorage.removeItem('loginSuccess');
+    }
+  }, [user]);
+
+  if (loading || (!isFullyInitialized) || (authCheckCount <= 3 && !user)) {
     return (
       <MainLayout>
         <div className="flex items-center justify-center min-h-[60vh]">
