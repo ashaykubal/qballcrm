@@ -5,30 +5,30 @@ const DashboardMetrics = () => {
   // In a real app, these would be fetched from an API
   const metrics = [
     {
-      title: "Interactions Today",
+      title: "Today",
       value: "5",
-      description: "Interactions submitted today",
+      description: "",
       trend: "+20%",
       trendDirection: "up",
     },
     {
       title: "Last 30 Days",
       value: "42",
-      description: "Interactions in the last month",
+      description: "",
       trend: "+12%",
       trendDirection: "up",
     },
     {
-      title: "Quarterly Interactions",
+      title: "Last Quarter",
       value: "87",
-      description: "Interactions this quarter",
+      description: "",
       trend: "+5%",
       trendDirection: "up",
     },
     {
       title: "Potential Executions",
       value: "23",
-      description: "Potential in last 30 days",
+      description: "Last 30 days",
       trend: "-8%",
       trendDirection: "down",
     },
@@ -45,7 +45,7 @@ const DashboardMetrics = () => {
             <div className="flex justify-between items-end">
               <div>
                 <p className="text-3xl font-bold">{metric.value}</p>
-                <p className="text-xs text-gray-500 mt-1">{metric.description}</p>
+                {metric.description && <p className="text-xs text-gray-500 mt-1">{metric.description}</p>}
               </div>
               <div className={`text-sm font-medium ${metric.trendDirection === "up" ? "text-green-600" : "text-red-600"}`}>
                 {metric.trend}
