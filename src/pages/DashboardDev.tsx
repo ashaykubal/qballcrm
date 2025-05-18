@@ -2,7 +2,7 @@
 import MainLayout from "@/layouts/MainLayout";
 import DashboardMetrics from "@/components/dashboard/DashboardMetrics";
 import ActionableIntelligence from "@/components/dashboard/ActionableIntelligence";
-import { ChevronDown, FileText, Home, Users } from "lucide-react";
+import { FileText, Home, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -28,11 +28,10 @@ const DashboardDev = () => {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="bg-[#9b87f5]/80 hover:bg-[#7E69AB]/90 active:bg-[#6E59A5] rounded-xl p-3 h-16 w-16 border-2 border-[#1A1F2C]/30 flex flex-col items-center justify-center shadow-sm"
+                      className="bg-white hover:bg-gray-100 active:bg-gray-200 rounded-xl p-3 h-16 w-16 border-2 border-[#1A1F2C]/30 flex items-center justify-center shadow-sm"
                       aria-label="Dashboard options"
                     >
-                      <Home className="h-10 w-10 text-white" />
-                      <ChevronDown className="h-3 w-3 text-white/80 mt-1" />
+                      <Home className="h-12 w-12 text-[#9b87f5]" />
                     </Button>
                   </DropdownMenuTrigger>
                 </TooltipTrigger>
