@@ -31,6 +31,11 @@ const Navbar = () => {
     }
   };
 
+  // Add active styles for the current page
+  const isActive = (path: string) => {
+    return location.pathname === path ? "text-blue-600 font-medium" : "text-gray-700";
+  };
+
   return (
     <nav className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -43,10 +48,10 @@ const Navbar = () => {
           
           {/* Desktop navigation */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link to="/" className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600">
+            <Link to="/" className={`px-3 py-2 text-sm font-medium ${isActive('/')} hover:text-blue-600`}>
               Home
             </Link>
-            <Link to="/about" className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600">
+            <Link to="/about" className={`px-3 py-2 text-sm font-medium ${isActive('/about')} hover:text-blue-600`}>
               About
             </Link>
             
@@ -90,14 +95,14 @@ const Navbar = () => {
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <Link
               to="/"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+              className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/')} hover:text-blue-600 hover:bg-gray-50`}
               onClick={() => setIsMenuOpen(false)}
             >
               Home
             </Link>
             <Link
               to="/about"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+              className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/about')} hover:text-blue-600 hover:bg-gray-50`}
               onClick={() => setIsMenuOpen(false)}
             >
               About
