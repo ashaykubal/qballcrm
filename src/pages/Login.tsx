@@ -63,7 +63,7 @@ const Login = () => {
               </Button>
             </form>
           </CardContent>
-          <CardFooter className="flex justify-center">
+          <CardFooter className="flex justify-center bg-gradient-to-b from-gray-50 to-white py-4">
             <p className="text-sm text-gray-600">
               Don&apos;t have an account?{" "}
               <Link to="/register" className="text-blue-600 hover:underline font-medium">
