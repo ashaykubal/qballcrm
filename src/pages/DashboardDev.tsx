@@ -1,85 +1,13 @@
 
 import MainLayout from "@/layouts/MainLayout";
-import DashboardMetrics from "@/components/dashboard/DashboardMetrics";
-import ActionableIntelligence from "@/components/dashboard/ActionableIntelligence";
-import { FileText, Home, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from "@/components/ui/tooltip";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import DashboardContent from "@/components/dashboard/DashboardContent";
 
 const DashboardDev = () => {
-  return <MainLayout>
+  return (
+    <MainLayout>
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center gap-6 mb-8">
-          <TooltipProvider>
-            <DropdownMenu>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="bg-white hover:bg-gray-100 active:bg-gray-200 rounded-xl p-3 h-16 w-16 border-2 border-[#1A1F2C]/30 flex items-center justify-center shadow-sm"
-                      aria-label="Dashboard options"
-                    >
-                      <Home className="h-12 w-12 text-[#9b87f5]" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>View dashboard options</p>
-                </TooltipContent>
-              </Tooltip>
-
-              <DropdownMenuContent align="start" className="w-56 bg-white">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <DropdownMenuItem
-                        className="flex items-center gap-2 cursor-pointer"
-                        onClick={() => console.log("Navigate to My Interactions")}
-                      >
-                        <FileText className="h-5 w-5" />
-                        <span>My Interactions</span>
-                      </DropdownMenuItem>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>View your interactions</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <DropdownMenuItem
-                        className="flex items-center gap-2 cursor-pointer"
-                        onClick={() => console.log("Navigate to My Contacts")}
-                      >
-                        <Users className="h-5 w-5" />
-                        <span>My Contacts</span>
-                      </DropdownMenuItem>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>View your contacts</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </TooltipProvider>
-          
-          <h1 className="text-3xl font-bold text-gray-800">My Dashboard (Development Mode)</h1>
-        </div>
+        <DashboardHeader title="My Dashboard (Development Mode)" />
         
         <div className="bg-amber-100 border-l-4 border-amber-500 p-4 mb-8">
           <p className="text-amber-700">
@@ -88,17 +16,10 @@ const DashboardDev = () => {
           </p>
         </div>
         
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold mb-4 text-gray-700">My Interactions</h2>
-          <DashboardMetrics />
-        </div>
-        
-        <div className="mt-10">
-          <h2 className="text-xl font-semibold mb-4 text-gray-700">Insights</h2>
-          <ActionableIntelligence />
-        </div>
+        <DashboardContent />
       </div>
-    </MainLayout>;
+    </MainLayout>
+  );
 };
 
 export default DashboardDev;
