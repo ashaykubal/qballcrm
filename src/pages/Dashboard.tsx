@@ -6,11 +6,33 @@ import MainLayout from "@/layouts/MainLayout";
 import DashboardMetrics from "@/components/dashboard/DashboardMetrics";
 import ActionableIntelligence from "@/components/dashboard/ActionableIntelligence";
 import DashboardNav from "@/components/dashboard/DashboardNav";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
-  const { user, loading, session, isFullyInitialized, isStableAuth } = useAuth();
+  const { user, loading, session, isFullyInitialized, isStableAuth, isSessionExpired } = useAuth();
   const navigate = useNavigate();
   const [authCheckCount, setAuthCheckCount] = useState(0);
+  const { toast } = useToast();
+  
+  // Handle session expiration specifically
+  useEffect(() => {
+    if (isSessionExpired && isFullyInitialized && isStableAuth) {
+      console.log("Session expired, redirecting to login");
+      
+      toast({
+        title: "Session Expired",
+        description: "Your session has expired due to inactivity. Please log in again.",
+        variant: "destructive",
+      });
+      
+      // Short timeout to allow the toast to be seen before redirecting
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+    }
+  }, [isSessionExpired, navigate, isFullyInitialized, isStableAuth, toast]);
   
   // Use more deterministic auth checks with the new isStableAuth flag
   useEffect(() => {
@@ -48,6 +70,24 @@ const Dashboard = () => {
       localStorage.removeItem('loginSuccess');
     }
   }, [user]);
+
+  // Show session expired alert when detected
+  if (isSessionExpired) {
+    return (
+      <MainLayout>
+        <div className="flex flex-col items-center justify-center min-h-[60vh]">
+          <Alert variant="destructive" className="max-w-md mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Session Expired</AlertTitle>
+            <AlertDescription>
+              Your session has expired due to inactivity. You'll be redirected to login shortly.
+            </AlertDescription>
+          </Alert>
+          <div className="animate-pulse text-lg font-medium">Redirecting to login...</div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   // Show loading state when auth is not yet stable
   if (loading || !isFullyInitialized || !isStableAuth || (authCheckCount <= 2 && !user)) {

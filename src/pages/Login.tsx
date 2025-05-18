@@ -26,11 +26,21 @@ const Login = () => {
   const [loginSuccess, setLoginSuccess] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isFullyInitialized, isStableAuth } = useAuth();
+  const { user, isFullyInitialized, isStableAuth, isSessionExpired } = useAuth();
 
   // Extract email from URL query params if present
   const queryParams = new URLSearchParams(location.search);
   const emailFromSignup = queryParams.get('email') || '';
+  
+  // Check for session expired query parameter
+  const sessionExpired = queryParams.get('expired') === 'true' || isSessionExpired;
+  
+  // Show session expired message if needed
+  useEffect(() => {
+    if (sessionExpired) {
+      toast.error("Your session has expired due to inactivity. Please log in again.");
+    }
+  }, [sessionExpired]);
 
   // Check if we should redirect authenticated users away from login page
   // Only do this when auth is fully initialized AND stable
@@ -114,6 +124,12 @@ const Login = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-5">
+            {sessionExpired && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-800 text-sm">
+                Your session has expired due to inactivity. Please log in again.
+              </div>
+            )}
+            
             <Form {...form}>
               <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
                 <FormField

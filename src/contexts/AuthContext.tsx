@@ -7,8 +7,9 @@ interface AuthContextType {
   session: Session | null;
   user: User | null;
   loading: boolean;
-  isFullyInitialized: boolean; // Flag to track complete initialization
-  isStableAuth: boolean; // New flag to track auth stability
+  isFullyInitialized: boolean;
+  isStableAuth: boolean;
+  isSessionExpired: boolean; // New flag to track session expiration
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -17,6 +18,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   isFullyInitialized: false,
   isStableAuth: false,
+  isSessionExpired: false,
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -25,19 +27,44 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [isFullyInitialized, setIsFullyInitialized] = useState(false);
   const [isStableAuth, setIsStableAuth] = useState(false);
+  const [isSessionExpired, setIsSessionExpired] = useState(false);
   
   // Use refs to track initialization progress and debounce auth changes
   const initialSessionCheckedRef = useRef(false);
   const authListenerSetUpRef = useRef(false);
   const authDebounceTimerRef = useRef<number | null>(null);
   const authStateChangeCountRef = useRef(0);
+  const lastActivityRef = useRef(Date.now());
   
   // Track consecutive stable auth checks
   const stableAuthChecksRef = useRef(0);
   const STABLE_AUTH_THRESHOLD = 3; // Number of checks needed to consider auth stable
 
+  // Reset session expired flag when user interacts with the app
+  useEffect(() => {
+    const resetActivityTimer = () => {
+      lastActivityRef.current = Date.now();
+      if (isSessionExpired) {
+        setIsSessionExpired(false);
+      }
+    };
+
+    // Add event listeners for user activity
+    window.addEventListener('mousedown', resetActivityTimer);
+    window.addEventListener('keydown', resetActivityTimer);
+    window.addEventListener('touchstart', resetActivityTimer);
+    window.addEventListener('scroll', resetActivityTimer);
+    
+    return () => {
+      window.removeEventListener('mousedown', resetActivityTimer);
+      window.removeEventListener('keydown', resetActivityTimer);
+      window.removeEventListener('touchstart', resetActivityTimer);
+      window.removeEventListener('scroll', resetActivityTimer);
+    };
+  }, [isSessionExpired]);
+
   // Handle auth state updates with debouncing
-  const updateAuthState = (newSession: Session | null) => {
+  const updateAuthState = (newSession: Session | null, event?: string) => {
     // Clear any existing timer to debounce rapid changes
     if (authDebounceTimerRef.current !== null) {
       window.clearTimeout(authDebounceTimerRef.current);
@@ -46,10 +73,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Increment the change counter to track volatility
     authStateChangeCountRef.current += 1;
     
+    // Check if this is a session expiration event
+    const isExpiredEvent = event === 'SIGNED_OUT' && session !== null && !newSession;
+    
+    if (isExpiredEvent) {
+      console.log("Session expired detected");
+      setIsSessionExpired(true);
+    }
+    
     // Debounce auth state updates to prevent rapid re-renders
     authDebounceTimerRef.current = window.setTimeout(() => {
       console.log("Auth state update (debounced):", 
-        newSession ? `User: ${newSession.user?.email}` : "No session");
+        newSession ? `User: ${newSession.user?.email}` : "No session",
+        event ? `Event: ${event}` : "");
       
       // Update the session and user state
       setSession(newSession);
@@ -99,11 +135,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           console.log("Token refreshed - maintaining existing auth state if possible");
           // Only update if there's a meaningful change to avoid loop
           if (!session || currentSession?.user?.id !== session.user.id) {
-            updateAuthState(currentSession);
+            updateAuthState(currentSession, event);
           }
         } else {
           // For other events, update the auth state with debouncing
-          updateAuthState(currentSession);
+          updateAuthState(currentSession, event);
         }
       }
     );
@@ -139,7 +175,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       user, 
       loading, 
       isFullyInitialized,
-      isStableAuth 
+      isStableAuth,
+      isSessionExpired
     }}>
       {children}
     </AuthContext.Provider>
