@@ -20,7 +20,7 @@ import {
 const DashboardDev = () => {
   return <MainLayout>
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-6 mb-8">
           <TooltipProvider>
             <DropdownMenu>
               <Tooltip>
@@ -28,12 +28,11 @@ const DashboardDev = () => {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      size="icon"
-                      className="bg-[#9b87f5] hover:bg-[#7E69AB] active:bg-[#6E59A5] rounded-lg p-2 text-white"
+                      className="bg-[#9b87f5]/80 hover:bg-[#7E69AB]/90 active:bg-[#6E59A5] rounded-xl p-3 h-16 w-16 border-2 border-[#1A1F2C]/30 flex flex-col items-center justify-center shadow-sm"
                       aria-label="Dashboard options"
                     >
-                      <Home className="h-8 w-8" />
-                      <ChevronDown className="h-5 w-5 ml-1" />
+                      <Home className="h-10 w-10 text-white" />
+                      <ChevronDown className="h-3 w-3 text-white/80 mt-1" />
                     </Button>
                   </DropdownMenuTrigger>
                 </TooltipTrigger>
