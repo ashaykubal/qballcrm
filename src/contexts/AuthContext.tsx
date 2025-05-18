@@ -38,6 +38,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const authDebounceTimerRef = useRef<number | null>(null);
   const authStateChangeCountRef = useRef(0);
   const lastActivityRef = useRef(Date.now());
+  const previousAuthStateRef = useRef<{session: Session | null, user: User | null}>({
+    session: null,
+    user: null,
+  });
   
   // Track consecutive stable auth checks
   const stableAuthChecksRef = useRef(0);
@@ -79,8 +83,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Check if this is a session expiration event
     const isExpiredEvent = event === 'SIGNED_OUT' && session !== null && !newSession;
     
-    // Check if this is an explicit login event (fast path)
-    const isLoginEvent = event === 'SIGNED_IN' && newSession?.user && !session;
+    // More precise login event detection - only consider it a login when:
+    // 1. The event is SIGNED_IN
+    // 2. We have a new session with a user
+    // 3. We didn't have a user before OR the user ID has changed
+    const wasSignedIn = previousAuthStateRef.current.session?.user?.id;
+    const isNewSignIn = newSession?.user?.id && (!wasSignedIn || wasSignedIn !== newSession.user.id);
+    const isLoginEvent = event === 'SIGNED_IN' && newSession?.user && isNewSignIn;
     
     if (isExpiredEvent) {
       console.log("Session expired detected");
@@ -88,7 +97,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
     
     if (isLoginEvent) {
-      console.log("Explicit login event detected, fast-tracking auth stability");
+      console.log("Explicit login event detected", newSession?.user?.email);
       setLoginEvent(true); // Set login event flag
       
       // Fast track auth stability for login events
@@ -100,11 +109,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(false);
       setIsStableAuth(true);
       
+      // Store the current auth state for comparison
+      previousAuthStateRef.current = {
+        session: newSession,
+        user: newSession?.user ?? null
+      };
+      
       // Clear login event flag after a delay to prevent race conditions
+      // but long enough to be detected by components
       setTimeout(() => {
         console.log("Clearing login event flag");
         setLoginEvent(false);
-      }, 2000);
+      }, 3000); // Extended from 2000ms to 3000ms
       
       return; // Skip debouncing for login events
     }
@@ -118,6 +134,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       // Update the session and user state
       setSession(newSession);
       setUser(newSession?.user ?? null);
+      
+      // Store the current auth state for comparison
+      previousAuthStateRef.current = {
+        session: newSession,
+        user: newSession?.user ?? null
+      };
       
       // Check for session/user consistency
       const isConsistent = Boolean(

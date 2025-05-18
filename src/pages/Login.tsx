@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -24,6 +23,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
+  const [loginAttemptInProgress, setLoginAttemptInProgress] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isFullyInitialized, isStableAuth, isSessionExpired, loginEvent } = useAuth();
@@ -56,6 +56,7 @@ const Login = () => {
     return () => {
       // If we're not navigating to dashboard, clean up the flags
       if (!loginSuccess) {
+        console.log("Unmounting Login component - cleaning up flags");
         localStorage.removeItem('loginSuccess');
         localStorage.removeItem('loginSuccessTimestamp');
       }
@@ -64,6 +65,12 @@ const Login = () => {
 
   // Check if we should redirect authenticated users away from login page
   useEffect(() => {
+    // Don't redirect if user is actively trying to log in
+    if (loginAttemptInProgress) {
+      console.log("Login attempt in progress, skipping auth redirect");
+      return;
+    }
+    
     if (isFullyInitialized && isStableAuth && user) {
       // Check for explicit login event or existing login success flag
       const hasLoginSuccess = localStorage.getItem('loginSuccess') === 'true';
@@ -84,13 +91,13 @@ const Login = () => {
         setTimeout(() => {
           console.log("Executing delayed navigation to dashboard");
           navigate("/dashboard");
-        }, 500); // Increased from 300ms to 500ms for more stability
+        }, 800); // Increased to 800ms for more stability
       } else {
         console.log("Already authenticated, redirecting to dashboard");
         navigate("/dashboard");
       }
     }
-  }, [user, loginSuccess, navigate, isFullyInitialized, isStableAuth, loginEvent]);
+  }, [user, loginSuccess, navigate, isFullyInitialized, isStableAuth, loginEvent, loginAttemptInProgress]);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -108,6 +115,7 @@ const Login = () => {
   }, [emailFromSignup, form]);
 
   const handleSubmit = async (values: LoginFormValues) => {
+    setLoginAttemptInProgress(true);
     setLoading(true);
     setLoginSuccess(false); // Reset login success state
     
@@ -124,6 +132,8 @@ const Login = () => {
         } else {
           toast.error(error.message);
         }
+        // Reset login attempt flag on error
+        setLoginAttemptInProgress(false);
       } else {
         // Indicate successful login and prepare for navigation
         toast.success("Successfully logged in!");
@@ -134,11 +144,18 @@ const Login = () => {
         localStorage.setItem('loginSuccessTimestamp', Date.now().toString());
         
         console.log("Login successful, waiting for auth state to update");
+        // Keep login attempt flag true so we don't redirect prematurely
         // Navigation will happen via useEffect when user state updates
+        
+        // Reset login attempt flag after a delay to prevent getting stuck
+        setTimeout(() => {
+          setLoginAttemptInProgress(false);
+        }, 5000); // Safety reset after 5 seconds
       }
     } catch (err) {
       toast.error("An unexpected error occurred");
       console.error("Login error:", err);
+      setLoginAttemptInProgress(false);
     } finally {
       setLoading(false);
     }

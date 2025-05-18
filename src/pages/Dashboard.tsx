@@ -9,11 +9,21 @@ import DashboardNav from "@/components/dashboard/DashboardNav";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 
 const Dashboard = () => {
-  const { user, loading, session, isFullyInitialized, isStableAuth, isSessionExpired, loginEvent } = useAuth();
+  const { 
+    user, 
+    loading, 
+    session, 
+    isFullyInitialized, 
+    isStableAuth, 
+    isSessionExpired, 
+    loginEvent 
+  } = useAuth();
   const navigate = useNavigate();
   const [authCheckCount, setAuthCheckCount] = useState(0);
+  const [authCheckStarted, setAuthCheckStarted] = useState(false);
   const { toast } = useToast();
   
   // Handle session expiration specifically
@@ -36,17 +46,22 @@ const Dashboard = () => {
   
   // Use more deterministic auth checks with the new isStableAuth flag
   useEffect(() => {
+    // Skip auth checks if explicit login event is happening
+    if (loginEvent) {
+      console.log("Explicit login in progress, skipping authCheck effect entirely");
+      return;
+    }
+    
     // Only perform checks after auth system is fully initialized AND stable
     if (isFullyInitialized && isStableAuth && !loading) {
+      // Mark that we've started checking auth so we know if the user is stuck
+      if (!authCheckStarted) {
+        setAuthCheckStarted(true);
+      }
+      
       // If no user and no session after full initialization, handle redirect
       if (!user && !session) {
         console.log(`Dashboard auth check #${authCheckCount + 1}: No user or session found`);
-        
-        // Skip auth checks if we're coming from an explicit login (prevents refresh loops)
-        if (loginEvent) {
-          console.log("Explicit login in progress, skipping auth check");
-          return;
-        }
         
         // Use setTimeout with a longer delay to prevent rapid state changes
         setTimeout(() => {
@@ -100,8 +115,23 @@ const Dashboard = () => {
   if (loading || !isFullyInitialized || !isStableAuth || (authCheckCount <= 2 && !user)) {
     return (
       <MainLayout>
-        <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
           <div className="animate-pulse text-lg font-medium">Loading...</div>
+          
+          {/* Add an escape hatch if user gets stuck */}
+          {authCheckStarted && authCheckCount > 1 && (
+            <div className="text-center">
+              <p className="text-sm text-gray-600 mb-2">
+                Having trouble? Try logging in again:
+              </p>
+              <Button 
+                variant="outline"
+                onClick={() => navigate("/login")}
+              >
+                Go to Login
+              </Button>
+            </div>
+          )}
         </div>
       </MainLayout>
     );
