@@ -1,14 +1,34 @@
 
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { Menu, X, LogIn } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Menu, X, LogIn, LogOut, User } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success("Successfully logged out");
+        navigate("/login");
+      }
+    } catch (err) {
+      toast.error("An unexpected error occurred");
+      console.error("Logout error:", err);
+    }
   };
 
   return (
@@ -29,12 +49,26 @@ const Navbar = () => {
             <Link to="/about" className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600">
               About
             </Link>
-            <Link to="/login">
-              <Button variant="default" size="sm" className="ml-4">
-                <LogIn className="mr-1" size={16} />
-                Login
-              </Button>
-            </Link>
+            
+            {user ? (
+              <>
+                <Button variant="ghost" size="sm" className="flex items-center">
+                  <User className="mr-1" size={16} />
+                  {user.email?.split('@')[0]}
+                </Button>
+                <Button variant="default" size="sm" onClick={handleLogout} className="ml-2">
+                  <LogOut className="mr-1" size={16} />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <Link to="/login">
+                <Button variant="default" size="sm" className="ml-4">
+                  <LogIn className="mr-1" size={16} />
+                  Login
+                </Button>
+              </Link>
+            )}
           </div>
           
           {/* Mobile menu button */}
@@ -68,19 +102,41 @@ const Navbar = () => {
             >
               About
             </Link>
-            <Link
-              to="/login"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <Button
-                variant="default"
-                size="sm"
-                className="ml-3 mt-2 w-auto"
+            
+            {user ? (
+              <>
+                <div className="block px-3 py-2 rounded-md text-base font-medium text-gray-700">
+                  <User className="inline mr-1" size={16} />
+                  {user.email?.split('@')[0]}
+                </div>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => {
+                    handleLogout();
+                    setIsMenuOpen(false);
+                  }}
+                  className="ml-3 mt-2 w-full justify-start"
+                >
+                  <LogOut className="mr-1" size={16} />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <Link
+                to="/login"
+                onClick={() => setIsMenuOpen(false)}
               >
-                <LogIn className="mr-1" size={16} />
-                Login
-              </Button>
-            </Link>
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="ml-3 mt-2 w-auto"
+                >
+                  <LogIn className="mr-1" size={16} />
+                  Login
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       )}
