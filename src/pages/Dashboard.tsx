@@ -8,24 +8,25 @@ import ActionableIntelligence from "@/components/dashboard/ActionableIntelligenc
 import DashboardNav from "@/components/dashboard/DashboardNav";
 
 const Dashboard = () => {
-  const { user, loading, session, isFullyInitialized } = useAuth();
+  const { user, loading, session, isFullyInitialized, isStableAuth } = useAuth();
   const navigate = useNavigate();
   const [authCheckCount, setAuthCheckCount] = useState(0);
   
+  // Use more deterministic auth checks with the new isStableAuth flag
   useEffect(() => {
-    // Only perform checks after auth system is fully initialized
-    if (isFullyInitialized && !loading) {
+    // Only perform checks after auth system is fully initialized AND stable
+    if (isFullyInitialized && isStableAuth && !loading) {
       // If no user and no session after full initialization, handle redirect
       if (!user && !session) {
         console.log(`Dashboard auth check #${authCheckCount + 1}: No user or session found`);
         
-        // Use setTimeout to delay the check increment to allow for auth state to stabilize
+        // Use setTimeout with a longer delay to prevent rapid state changes
         setTimeout(() => {
           setAuthCheckCount((prevCount) => prevCount + 1);
-        }, 300);
+        }, 500); // Increased delay to allow more time for auth to stabilize
         
         // Only redirect after multiple checks confirm the user isn't authenticated
-        if (authCheckCount >= 3) {
+        if (authCheckCount >= 2) { // Reduced threshold since we have isStableAuth
           console.log("Multiple checks confirm no auth, redirecting to login");
           navigate("/login");
         }
@@ -35,9 +36,9 @@ const Dashboard = () => {
         setAuthCheckCount(0);
       }
     }
-  }, [user, session, loading, navigate, authCheckCount, isFullyInitialized]);
+  }, [user, session, loading, navigate, authCheckCount, isFullyInitialized, isStableAuth]);
 
-  // Check local storage for login status to prevent redirect loop
+  // Check local storage for login success flag
   useEffect(() => {
     const loginSuccessFlag = localStorage.getItem('loginSuccess') === 'true';
     
@@ -48,7 +49,8 @@ const Dashboard = () => {
     }
   }, [user]);
 
-  if (loading || (!isFullyInitialized) || (authCheckCount <= 3 && !user)) {
+  // Show loading state when auth is not yet stable
+  if (loading || !isFullyInitialized || !isStableAuth || (authCheckCount <= 2 && !user)) {
     return (
       <MainLayout>
         <div className="flex items-center justify-center min-h-[60vh]">

@@ -26,30 +26,34 @@ const Login = () => {
   const [loginSuccess, setLoginSuccess] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isFullyInitialized } = useAuth();
+  const { user, isFullyInitialized, isStableAuth } = useAuth();
 
   // Extract email from URL query params if present
   const queryParams = new URLSearchParams(location.search);
   const emailFromSignup = queryParams.get('email') || '';
 
   // Check if we should redirect authenticated users away from login page
+  // Only do this when auth is fully initialized AND stable
   useEffect(() => {
-    if (isFullyInitialized && user) {
+    if (isFullyInitialized && isStableAuth && user) {
       console.log("Already authenticated, redirecting to dashboard");
       navigate("/dashboard");
     }
-  }, [user, isFullyInitialized, navigate]);
+  }, [user, isFullyInitialized, isStableAuth, navigate]);
 
+  // Handle successful login with delay to allow auth state to stabilize
   useEffect(() => {
-    // Only navigate to dashboard if we're sure the user is authenticated
-    // and we've already confirmed successful login
-    if (user && loginSuccess && isFullyInitialized) {
+    if (user && loginSuccess && isFullyInitialized && isStableAuth) {
       console.log("User authenticated and login successful, navigating to dashboard");
       // Set a flag in localStorage to help prevent redirect loops
       localStorage.setItem('loginSuccess', 'true');
-      navigate("/dashboard");
+      
+      // Add a short delay before navigation to ensure auth state has stabilized
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 300);
     }
-  }, [user, loginSuccess, navigate, isFullyInitialized]);
+  }, [user, loginSuccess, navigate, isFullyInitialized, isStableAuth]);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
