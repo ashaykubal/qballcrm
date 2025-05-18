@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -48,16 +49,29 @@ const SignUp = () => {
     setLoading(true);
     
     try {
-      const { error } = await supabase.auth.signUp({
+      // Explicitly disable email confirmation during signup
+      const { data, error } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
+        options: {
+          emailRedirectTo: window.location.origin,
+          data: {
+            // Any custom user metadata can go here if needed
+          }
+        }
       });
       
       if (error) {
         toast.error(error.message);
       } else {
-        toast.success("Account created successfully! Please check your email for verification.");
-        navigate("/dashboard");
+        // Successfully created account
+        toast.success("Account created successfully!");
+        
+        // Sign user out to ensure clean state before redirecting to login
+        await supabase.auth.signOut();
+        
+        // Redirect to login page with email prefilled
+        navigate(`/login?email=${encodeURIComponent(values.email)}`);
       }
     } catch (err) {
       toast.error("An unexpected error occurred");

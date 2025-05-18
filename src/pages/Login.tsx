@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
@@ -24,7 +24,12 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
+
+  // Extract email from URL query params if present
+  const queryParams = new URLSearchParams(location.search);
+  const emailFromSignup = queryParams.get('email') || '';
 
   useEffect(() => {
     if (user) {
@@ -35,10 +40,17 @@ const Login = () => {
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      email: emailFromSignup,
       password: ""
     }
   });
+
+  // Update form when email from URL changes
+  useEffect(() => {
+    if (emailFromSignup) {
+      form.setValue('email', emailFromSignup);
+    }
+  }, [emailFromSignup, form]);
 
   const handleSubmit = async (values: LoginFormValues) => {
     setLoading(true);
@@ -50,7 +62,12 @@ const Login = () => {
       });
       
       if (error) {
-        toast.error(error.message);
+        // Handle specific auth errors with clearer messages
+        if (error.message.includes("Invalid login credentials")) {
+          toast.error("Invalid email or password. Please try again.");
+        } else {
+          toast.error(error.message);
+        }
       } else {
         toast.success("Successfully logged in!");
         navigate("/dashboard");
