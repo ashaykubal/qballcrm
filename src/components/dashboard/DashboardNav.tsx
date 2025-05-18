@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { 
   DropdownMenu,
@@ -15,6 +16,8 @@ import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from "@/compon
 import { useNavigate } from "react-router-dom";
 import { Users, Home, ChevronDown, FileText, Building } from "lucide-react";
 
+// This component is no longer used directly in the dashboard
+// It's kept for reference in case we need to reimplement action buttons later
 const DashboardNav = () => {
   const navigate = useNavigate();
 
