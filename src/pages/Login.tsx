@@ -23,6 +23,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
+  const [loginSuccess, setLoginSuccess] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -32,10 +33,13 @@ const Login = () => {
   const emailFromSignup = queryParams.get('email') || '';
 
   useEffect(() => {
-    if (user) {
+    // Only navigate to dashboard if we're sure the user is authenticated
+    // and we've already confirmed successful login
+    if (user && loginSuccess) {
+      console.log("User authenticated, navigating to dashboard");
       navigate("/dashboard");
     }
-  }, [user, navigate]);
+  }, [user, loginSuccess, navigate]);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -68,13 +72,18 @@ const Login = () => {
         } else {
           toast.error(error.message);
         }
+        setLoginSuccess(false);
       } else {
+        // Indicate successful login and prepare for navigation
         toast.success("Successfully logged in!");
-        navigate("/dashboard");
+        setLoginSuccess(true);
+        
+        // Navigation will happen via useEffect when user state updates
       }
     } catch (err) {
       toast.error("An unexpected error occurred");
       console.error("Login error:", err);
+      setLoginSuccess(false);
     } finally {
       setLoading(false);
     }

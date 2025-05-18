@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import MainLayout from "@/layouts/MainLayout";
@@ -8,16 +8,30 @@ import ActionableIntelligence from "@/components/dashboard/ActionableIntelligenc
 import DashboardNav from "@/components/dashboard/DashboardNav";
 
 const Dashboard = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, session } = useAuth();
   const navigate = useNavigate();
+  const [authCheckCount, setAuthCheckCount] = useState(0);
   
   useEffect(() => {
-    if (!loading && !user) {
-      navigate("/login");
+    // Only redirect after we're sure auth state is settled
+    // and the user is definitely not authenticated after multiple checks
+    if (!loading) {
+      if (!user && !session) {
+        // Increase the check count to verify this isn't a temporary state
+        setAuthCheckCount((prevCount) => prevCount + 1);
+        
+        // Only redirect after several checks confirm the user isn't authenticated
+        if (authCheckCount > 1) {
+          navigate("/login");
+        }
+      } else {
+        // Reset counter if user is found
+        setAuthCheckCount(0);
+      }
     }
-  }, [user, loading, navigate]);
+  }, [user, session, loading, navigate, authCheckCount]);
 
-  if (loading) {
+  if (loading || (authCheckCount <= 1 && !user)) {
     return (
       <MainLayout>
         <div className="flex items-center justify-center min-h-[60vh]">
