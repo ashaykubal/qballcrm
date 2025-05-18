@@ -20,13 +20,13 @@ const Login = () => {
     <MainLayout>
       <div className="flex items-center justify-center min-h-[80vh] px-4 bg-gradient-to-br from-blue-50 to-purple-50">
         <Card className="w-full max-w-md shadow-lg border-opacity-50">
-          <CardHeader className="space-y-1 bg-gradient-to-b from-white to-gray-50">
-            <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
-            <CardDescription className="text-center">
+          <CardHeader className="space-y-1 bg-gradient-to-b from-white to-gray-50 py-4">
+            <CardTitle className="text-xl font-bold text-center">Login</CardTitle>
+            <CardDescription className="text-center text-sm">
               Enter your email and password to login to your account
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-5">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium">
