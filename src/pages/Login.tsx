@@ -134,6 +134,7 @@ const Login = () => {
         }
         // Reset login attempt flag on error
         setLoginAttemptInProgress(false);
+        setLoading(false); // Make sure to reset loading on error
       } else {
         // Indicate successful login and prepare for navigation
         toast.success("Successfully logged in!");
@@ -147,6 +148,8 @@ const Login = () => {
         // Keep login attempt flag true so we don't redirect prematurely
         // Navigation will happen via useEffect when user state updates
         
+        // Keep loading true until navigation - don't reset it here
+        
         // Reset login attempt flag after a delay to prevent getting stuck
         setTimeout(() => {
           setLoginAttemptInProgress(false);
@@ -156,15 +159,24 @@ const Login = () => {
       toast.error("An unexpected error occurred");
       console.error("Login error:", err);
       setLoginAttemptInProgress(false);
-    } finally {
-      setLoading(false);
+      setLoading(false); // Make sure to reset loading on error
     }
   };
 
   return (
     <MainLayout>
       <div className="flex items-center justify-center min-h-[80vh] px-4 bg-gradient-to-br from-blue-50 to-purple-50">
-        <Card className="w-full max-w-md shadow-lg border-opacity-50 rounded-xl overflow-hidden">
+        <Card className="w-full max-w-md shadow-lg border-opacity-50 rounded-xl overflow-hidden relative">
+          {/* Spinner overlay - only shown when loading is true */}
+          {loading && (
+            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-xl">
+              <div className="flex flex-col items-center">
+                <Loader2 className="h-10 w-10 animate-spin text-primary mb-2" />
+                <p className="text-sm font-medium text-gray-600">Logging in...</p>
+              </div>
+            </div>
+          )}
+          
           <CardHeader className="space-y-1 bg-gradient-to-b from-white to-gray-50 py-4">
             <CardTitle className="text-xl font-bold text-center">Login</CardTitle>
             <CardDescription className="text-center text-sm">
