@@ -9,7 +9,8 @@ interface AuthContextType {
   loading: boolean;
   isFullyInitialized: boolean;
   isStableAuth: boolean;
-  isSessionExpired: boolean; // New flag to track session expiration
+  isSessionExpired: boolean;
+  loginEvent: boolean; // New flag to track explicit login events
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -19,6 +20,7 @@ const AuthContext = createContext<AuthContextType>({
   isFullyInitialized: false,
   isStableAuth: false,
   isSessionExpired: false,
+  loginEvent: false,
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -28,6 +30,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isFullyInitialized, setIsFullyInitialized] = useState(false);
   const [isStableAuth, setIsStableAuth] = useState(false);
   const [isSessionExpired, setIsSessionExpired] = useState(false);
+  const [loginEvent, setLoginEvent] = useState(false);
   
   // Use refs to track initialization progress and debounce auth changes
   const initialSessionCheckedRef = useRef(false);
@@ -76,9 +79,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Check if this is a session expiration event
     const isExpiredEvent = event === 'SIGNED_OUT' && session !== null && !newSession;
     
+    // Check if this is an explicit login event (fast path)
+    const isLoginEvent = event === 'SIGNED_IN' && newSession?.user && !session;
+    
     if (isExpiredEvent) {
       console.log("Session expired detected");
       setIsSessionExpired(true);
+    }
+    
+    if (isLoginEvent) {
+      console.log("Explicit login event detected, fast-tracking auth stability");
+      setLoginEvent(true); // Set login event flag
+      
+      // Fast track auth stability for login events
+      stableAuthChecksRef.current = STABLE_AUTH_THRESHOLD;
+      
+      // Update session and user immediately for login events
+      setSession(newSession);
+      setUser(newSession?.user ?? null);
+      setLoading(false);
+      setIsStableAuth(true);
+      
+      // Clear login event flag after a delay to prevent race conditions
+      setTimeout(() => {
+        console.log("Clearing login event flag");
+        setLoginEvent(false);
+      }, 2000);
+      
+      return; // Skip debouncing for login events
     }
     
     // Debounce auth state updates to prevent rapid re-renders
@@ -176,7 +204,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       loading, 
       isFullyInitialized,
       isStableAuth,
-      isSessionExpired
+      isSessionExpired,
+      loginEvent
     }}>
       {children}
     </AuthContext.Provider>

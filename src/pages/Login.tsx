@@ -26,7 +26,7 @@ const Login = () => {
   const [loginSuccess, setLoginSuccess] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isFullyInitialized, isStableAuth, isSessionExpired } = useAuth();
+  const { user, isFullyInitialized, isStableAuth, isSessionExpired, loginEvent } = useAuth();
 
   // Extract email from URL query params if present
   const queryParams = new URLSearchParams(location.search);
@@ -42,28 +42,55 @@ const Login = () => {
     }
   }, [sessionExpired]);
 
+  // Clean up any stale login flags on component mount and unmount
+  useEffect(() => {
+    // Check if login success flag is stale (older than 2 minutes)
+    const loginSuccessTimestamp = localStorage.getItem('loginSuccessTimestamp');
+    if (loginSuccessTimestamp && Date.now() - parseInt(loginSuccessTimestamp, 10) > 2 * 60 * 1000) {
+      console.log("Clearing stale login success flags");
+      localStorage.removeItem('loginSuccess');
+      localStorage.removeItem('loginSuccessTimestamp');
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      // If we're not navigating to dashboard, clean up the flags
+      if (!loginSuccess) {
+        localStorage.removeItem('loginSuccess');
+        localStorage.removeItem('loginSuccessTimestamp');
+      }
+    };
+  }, []);
+
   // Check if we should redirect authenticated users away from login page
-  // Only do this when auth is fully initialized AND stable
   useEffect(() => {
     if (isFullyInitialized && isStableAuth && user) {
-      console.log("Already authenticated, redirecting to dashboard");
-      navigate("/dashboard");
-    }
-  }, [user, isFullyInitialized, isStableAuth, navigate]);
-
-  // Handle successful login with delay to allow auth state to stabilize
-  useEffect(() => {
-    if (user && loginSuccess && isFullyInitialized && isStableAuth) {
-      console.log("User authenticated and login successful, navigating to dashboard");
-      // Set a flag in localStorage to help prevent redirect loops
-      localStorage.setItem('loginSuccess', 'true');
+      // Check for explicit login event or existing login success flag
+      const hasLoginSuccess = localStorage.getItem('loginSuccess') === 'true';
       
-      // Add a short delay before navigation to ensure auth state has stabilized
-      setTimeout(() => {
+      console.log("Login page auth check:", { 
+        user: user?.email, 
+        loginSuccess, 
+        hasLoginSuccess,
+        loginEvent,
+        isFullyInitialized,
+        isStableAuth
+      });
+      
+      if (loginSuccess || hasLoginSuccess || loginEvent) {
+        console.log("User authenticated and login successful, navigating to dashboard");
+        
+        // Add a short delay before navigation to ensure auth state has stabilized
+        setTimeout(() => {
+          console.log("Executing delayed navigation to dashboard");
+          navigate("/dashboard");
+        }, 500); // Increased from 300ms to 500ms for more stability
+      } else {
+        console.log("Already authenticated, redirecting to dashboard");
         navigate("/dashboard");
-      }, 300);
+      }
     }
-  }, [user, loginSuccess, navigate, isFullyInitialized, isStableAuth]);
+  }, [user, loginSuccess, navigate, isFullyInitialized, isStableAuth, loginEvent]);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -82,6 +109,7 @@ const Login = () => {
 
   const handleSubmit = async (values: LoginFormValues) => {
     setLoading(true);
+    setLoginSuccess(false); // Reset login success state
     
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -96,18 +124,21 @@ const Login = () => {
         } else {
           toast.error(error.message);
         }
-        setLoginSuccess(false);
       } else {
         // Indicate successful login and prepare for navigation
         toast.success("Successfully logged in!");
         setLoginSuccess(true);
         
+        // Set login success flag with timestamp to avoid stale flags
+        localStorage.setItem('loginSuccess', 'true');
+        localStorage.setItem('loginSuccessTimestamp', Date.now().toString());
+        
+        console.log("Login successful, waiting for auth state to update");
         // Navigation will happen via useEffect when user state updates
       }
     } catch (err) {
       toast.error("An unexpected error occurred");
       console.error("Login error:", err);
-      setLoginSuccess(false);
     } finally {
       setLoading(false);
     }

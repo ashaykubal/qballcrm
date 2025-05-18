@@ -11,7 +11,7 @@ import { AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
-  const { user, loading, session, isFullyInitialized, isStableAuth, isSessionExpired } = useAuth();
+  const { user, loading, session, isFullyInitialized, isStableAuth, isSessionExpired, loginEvent } = useAuth();
   const navigate = useNavigate();
   const [authCheckCount, setAuthCheckCount] = useState(0);
   const { toast } = useToast();
@@ -42,6 +42,12 @@ const Dashboard = () => {
       if (!user && !session) {
         console.log(`Dashboard auth check #${authCheckCount + 1}: No user or session found`);
         
+        // Skip auth checks if we're coming from an explicit login (prevents refresh loops)
+        if (loginEvent) {
+          console.log("Explicit login in progress, skipping auth check");
+          return;
+        }
+        
         // Use setTimeout with a longer delay to prevent rapid state changes
         setTimeout(() => {
           setAuthCheckCount((prevCount) => prevCount + 1);
@@ -58,7 +64,7 @@ const Dashboard = () => {
         setAuthCheckCount(0);
       }
     }
-  }, [user, session, loading, navigate, authCheckCount, isFullyInitialized, isStableAuth]);
+  }, [user, session, loading, navigate, authCheckCount, isFullyInitialized, isStableAuth, loginEvent]);
 
   // Check local storage for login success flag
   useEffect(() => {
@@ -68,6 +74,7 @@ const Dashboard = () => {
       console.log("Login success flag found, ensuring we stay on dashboard");
       // Clear the flag after we've used it
       localStorage.removeItem('loginSuccess');
+      localStorage.removeItem('loginSuccessTimestamp');
     }
   }, [user]);
 
