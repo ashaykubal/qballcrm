@@ -32,78 +32,82 @@ const ActionableIntelligence = () => {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <Card className="shadow-md">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-md">My Frequently Discussed Topics</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-2">
-            {discussionTopics.map((topic, index) => (
-              <li key={index} className="flex justify-between">
-                <span>{topic.name}</span>
-                <span className="text-gray-500 text-sm">{topic.count} discussions</span>
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
+    <div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="shadow-md">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-md">My Frequently Discussed Topics</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2">
+              {discussionTopics.map((topic, index) => (
+                <li key={index} className="flex justify-between">
+                  <span>{topic.name}</span>
+                  <span className="text-gray-500 text-sm">{topic.count} discussions</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
 
-      <Card className="shadow-md">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-md">Most Popular Discussion Topics</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-2">
-            {popularTopics.map((topic, index) => (
-              <li key={index} className="flex justify-between">
-                <span>{topic.name}</span>
-                <span className="text-gray-500 text-sm">{topic.count} discussions</span>
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
+        <Card className="shadow-md">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-md">Most Popular Discussion Topics</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2">
+              {popularTopics.map((topic, index) => (
+                <li key={index} className="flex justify-between">
+                  <span>{topic.name}</span>
+                  <span className="text-gray-500 text-sm">{topic.count} discussions</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
 
-      <h2 className="text-xl font-semibold mb-4 text-gray-700 col-span-1 md:col-span-2">My Contacts</h2>
+      <h2 className="text-xl font-semibold mt-8 mb-4 text-gray-700">My Contacts</h2>
       
-      <Card className="shadow-md">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-md">Recently Contacted</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-3">
-            {recentContacts.map((contact, index) => (
-              <li key={index} className="flex flex-col">
-                <span className="font-medium">{contact.name}</span>
-                <div className="flex justify-between text-sm text-gray-500">
-                  <span>{contact.company}</span>
-                  <span>Last contact: {contact.lastContact}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="shadow-md">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-md">Recently Contacted</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-3">
+              {recentContacts.map((contact, index) => (
+                <li key={index} className="flex flex-col">
+                  <span className="font-medium">{contact.name}</span>
+                  <div className="flex justify-between text-sm text-gray-500">
+                    <span>{contact.company}</span>
+                    <span>Last contact: {contact.lastContact}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
 
-      <Card className="shadow-md">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-md">Touchpoint Overdue</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-3">
-            {overdueContacts.map((contact, index) => (
-              <li key={index} className="flex flex-col">
-                <span className="font-medium">{contact.name}</span>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">{contact.company}</span>
-                  <span className="text-red-500">Overdue: {contact.lastContact}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
+        <Card className="shadow-md">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-md">Touchpoint Overdue</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-3">
+              {overdueContacts.map((contact, index) => (
+                <li key={index} className="flex flex-col">
+                  <span className="font-medium">{contact.name}</span>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">{contact.company}</span>
+                    <span className="text-red-500">Overdue: {contact.lastContact}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
