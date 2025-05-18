@@ -151,9 +151,7 @@ const Dashboard = () => {
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center gap-2 mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
-          
+        <div className="flex items-center gap-4 mb-8">
           <TooltipProvider>
             <DropdownMenu>
               <Tooltip>
@@ -162,11 +160,11 @@ const Dashboard = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="ml-2 hover:bg-gray-100 p-1"
+                      className="bg-[#9b87f5] hover:bg-[#7E69AB] active:bg-[#6E59A5] rounded-lg p-2 text-white"
                       aria-label="Dashboard options"
                     >
-                      <Home className="h-6 w-6" />
-                      <ChevronDown className="h-4 w-4 ml-1" />
+                      <Home className="h-8 w-8" />
+                      <ChevronDown className="h-5 w-5 ml-1" />
                     </Button>
                   </DropdownMenuTrigger>
                 </TooltipTrigger>
@@ -212,6 +210,8 @@ const Dashboard = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           </TooltipProvider>
+          
+          <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
         </div>
         
         <div className="mt-8">
