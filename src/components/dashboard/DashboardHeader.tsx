@@ -28,7 +28,7 @@ const DashboardHeader = ({ title }: DashboardHeaderProps) => {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="bg-white hover:bg-gray-100 active:bg-gray-200 rounded-xl p-3 h-16 w-16 border-2 border-[#1A1F2C]/30 flex items-center justify-center shadow-sm"
+                  className="bg-white hover:bg-[#D6BCFA] active:bg-[#7E69AB] rounded-xl p-3 h-16 w-16 border-2 border-[#9b87f5] flex items-center justify-center shadow-sm transition-colors"
                   aria-label="Dashboard options"
                 >
                   <Home className="h-12 w-12 text-[#9b87f5]" />
@@ -45,7 +45,7 @@ const DashboardHeader = ({ title }: DashboardHeaderProps) => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <DropdownMenuItem
-                    className="flex items-center gap-2 cursor-pointer"
+                    className="flex items-center gap-2 cursor-pointer hover:bg-[#D6BCFA]"
                     onClick={() => console.log("Navigate to My Interactions")}
                   >
                     <FileText className="h-5 w-5" />
@@ -62,7 +62,7 @@ const DashboardHeader = ({ title }: DashboardHeaderProps) => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <DropdownMenuItem
-                    className="flex items-center gap-2 cursor-pointer"
+                    className="flex items-center gap-2 cursor-pointer hover:bg-[#D6BCFA]"
                     onClick={() => console.log("Navigate to My Contacts")}
                   >
                     <Users className="h-5 w-5" />
