@@ -29,13 +29,26 @@ const DashboardHeader = ({
 
           <DropdownMenuContent 
             align="start" 
-            className="bg-white rounded-xl border-2 border-[#9b87f5] shadow-sm py-2 w-[76px] flex flex-col items-center"
-            sideOffset={-8}
+            className="bg-white rounded-xl border-2 border-[#9b87f5] shadow-sm py-2 w-16 flex flex-col items-center gap-2"
+            sideOffset={4}
           >
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <DropdownMenuItem className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] rounded-xl p-3 h-16 w-16 border-2 border-[#9b87f5] flex items-center justify-center shadow-sm transition-colors m-1" onClick={() => console.log("Navigate to My Interactions")}>
+                  <DropdownMenuItem className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] rounded-lg p-3 h-16 w-14 flex items-center justify-center transition-colors" onClick={() => console.log("Navigate to Home")}>
+                    <Home className="h-12 w-12 text-[#9b87f5]" />
+                  </DropdownMenuItem>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Home</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DropdownMenuItem className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] rounded-lg p-3 h-16 w-14 flex items-center justify-center transition-colors" onClick={() => console.log("Navigate to My Interactions")}>
                     <FileText className="h-12 w-12 text-[#9b87f5]" />
                   </DropdownMenuItem>
                 </TooltipTrigger>
@@ -48,7 +61,7 @@ const DashboardHeader = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <DropdownMenuItem className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] rounded-xl p-3 h-16 w-16 border-2 border-[#9b87f5] flex items-center justify-center shadow-sm transition-colors m-1" onClick={() => console.log("Navigate to My Contacts")}>
+                  <DropdownMenuItem className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] rounded-lg p-3 h-16 w-14 flex items-center justify-center transition-colors" onClick={() => console.log("Navigate to My Contacts")}>
                     <Users className="h-12 w-12 text-[#9b87f5]" />
                   </DropdownMenuItem>
                 </TooltipTrigger>
