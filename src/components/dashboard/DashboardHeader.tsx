@@ -40,20 +40,19 @@ const DashboardHeader = ({ title }: DashboardHeaderProps) => {
             </TooltipContent>
           </Tooltip>
 
-          <DropdownMenuContent align="start" className="w-56 bg-white">
+          <DropdownMenuContent align="start" className="bg-white p-2 flex flex-col gap-2">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <DropdownMenuItem
-                    className="flex items-center gap-2 cursor-pointer hover:bg-[#D6BCFA]/30"
+                    className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] rounded-xl p-3 h-16 w-16 border-2 border-[#9b87f5] flex items-center justify-center shadow-sm transition-colors"
                     onClick={() => console.log("Navigate to My Interactions")}
                   >
-                    <FileText className="h-5 w-5" />
-                    <span>My Interactions</span>
+                    <FileText className="h-12 w-12 text-[#9b87f5]" />
                   </DropdownMenuItem>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>View your interactions</p>
+                  <p>My Interactions</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -62,15 +61,14 @@ const DashboardHeader = ({ title }: DashboardHeaderProps) => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <DropdownMenuItem
-                    className="flex items-center gap-2 cursor-pointer hover:bg-[#D6BCFA]/30"
+                    className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] rounded-xl p-3 h-16 w-16 border-2 border-[#9b87f5] flex items-center justify-center shadow-sm transition-colors"
                     onClick={() => console.log("Navigate to My Contacts")}
                   >
-                    <Users className="h-5 w-5" />
-                    <span>My Contacts</span>
+                    <Users className="h-12 w-12 text-[#9b87f5]" />
                   </DropdownMenuItem>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>View your contacts</p>
+                  <p>My Contacts</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
