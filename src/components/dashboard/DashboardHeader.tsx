@@ -1,10 +1,13 @@
+
 import { FileText, Home, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 interface DashboardHeaderProps {
   title: string;
 }
+
 const DashboardHeader = ({
   title
 }: DashboardHeaderProps) => {
@@ -24,11 +27,15 @@ const DashboardHeader = ({
             </TooltipContent>
           </Tooltip>
 
-          <DropdownMenuContent align="start" className="bg-white p-2 flex flex-col gap-2 px-0 py-0">
+          <DropdownMenuContent 
+            align="start" 
+            className="bg-white rounded-xl border-2 border-[#9b87f5] shadow-sm py-2 w-[76px] flex flex-col items-center"
+            sideOffset={-8}
+          >
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <DropdownMenuItem className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] rounded-xl p-3 h-16 w-16 border-2 border-[#9b87f5] flex items-center justify-center shadow-sm transition-colors" onClick={() => console.log("Navigate to My Interactions")}>
+                  <DropdownMenuItem className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] rounded-xl p-3 h-16 w-16 border-2 border-[#9b87f5] flex items-center justify-center shadow-sm transition-colors m-1" onClick={() => console.log("Navigate to My Interactions")}>
                     <FileText className="h-12 w-12 text-[#9b87f5]" />
                   </DropdownMenuItem>
                 </TooltipTrigger>
@@ -41,7 +48,7 @@ const DashboardHeader = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <DropdownMenuItem className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] rounded-xl p-3 h-16 w-16 border-2 border-[#9b87f5] flex items-center justify-center shadow-sm transition-colors" onClick={() => console.log("Navigate to My Contacts")}>
+                  <DropdownMenuItem className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] rounded-xl p-3 h-16 w-16 border-2 border-[#9b87f5] flex items-center justify-center shadow-sm transition-colors m-1" onClick={() => console.log("Navigate to My Contacts")}>
                     <Users className="h-12 w-12 text-[#9b87f5]" />
                   </DropdownMenuItem>
                 </TooltipTrigger>
@@ -57,4 +64,5 @@ const DashboardHeader = ({
       <h1 className="text-3xl font-bold text-gray-800">{title}</h1>
     </div>;
 };
+
 export default DashboardHeader;
