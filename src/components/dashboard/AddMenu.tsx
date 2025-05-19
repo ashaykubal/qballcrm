@@ -16,6 +16,7 @@ const AddMenu = () => {
               icon={Plus} 
               label="Add New"
               className="rounded-xl"
+              isDropdownTrigger={true} // Set to true for dropdown triggers
               onClick={() => {}}
             />
           </div>

@@ -16,6 +16,7 @@ const NavMenu = () => {
               icon={Home} 
               label="Home"
               className="rounded-xl"
+              isDropdownTrigger={true} // Set to true for dropdown triggers
             />
           </div>
         </PopoverTrigger>

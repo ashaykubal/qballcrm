@@ -8,13 +8,15 @@ interface MenuButtonProps {
   label: string;
   onClick?: () => void;
   className?: string;
+  isDropdownTrigger?: boolean; // New prop to determine if button is a dropdown trigger
 }
 
 const MenuButton = ({
   icon: Icon,
   label,
   onClick,
-  className = ""
+  className = "",
+  isDropdownTrigger = false // Default to false
 }: MenuButtonProps) => {
   // Apply a stroke width of 3 specifically to the Plus icon to make it bolder
   const strokeWidth = Icon.name === "Plus" ? 3 : 2;
@@ -25,7 +27,7 @@ const MenuButton = ({
         <TooltipTrigger asChild>
           <Button 
             variant="ghost" 
-            className={`bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] p-3 h-16 w-16 flex items-center justify-center transition-colors rounded-xl border-2 border-[#9b87f5] ${className}`} 
+            className={`bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] p-3 h-16 w-16 flex items-center justify-center transition-colors rounded-xl ${!isDropdownTrigger ? 'border-2 border-[#9b87f5]' : ''} ${className}`} 
             onClick={onClick} 
             aria-label={label}
           >
