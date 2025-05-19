@@ -13,7 +13,7 @@ const AddMenu = () => {
         <PopoverTrigger asChild>
           <div className="bg-white rounded-xl border-2 border-[#9b87f5] shadow-sm">
             <MenuButton 
-              icon={({ ...props }) => <Plus {...props} strokeWidth={3} />} 
+              icon={Plus} 
               label="Add New"
               className="rounded-xl"
               onClick={() => {}}

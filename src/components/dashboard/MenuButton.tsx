@@ -16,6 +16,9 @@ const MenuButton = ({
   onClick,
   className = ""
 }: MenuButtonProps) => {
+  // Apply a stroke width of 3 specifically to the Plus icon to make it bolder
+  const strokeWidth = Icon.name === "Plus" ? 3 : 2;
+  
   return (
     <TooltipProvider>
       <Tooltip>
@@ -26,7 +29,7 @@ const MenuButton = ({
             onClick={onClick} 
             aria-label={label}
           >
-            <Icon className="h-12 w-12 text-[#9b87f5]" />
+            <Icon className="h-12 w-12 text-[#9b87f5]" strokeWidth={strokeWidth} />
           </Button>
         </TooltipTrigger>
         <TooltipContent>
