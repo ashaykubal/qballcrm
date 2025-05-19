@@ -24,7 +24,7 @@ const DashboardHeader = ({
                   <TooltipTrigger asChild>
                     <Button 
                       variant="ghost" 
-                      className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] p-3 h-16 w-16 flex items-center justify-center transition-colors" 
+                      className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] p-3 h-16 w-16 flex items-center justify-center transition-colors rounded-xl" 
                       aria-label="Home"
                     >
                       <Home className="h-12 w-12 text-[#9b87f5]" />
@@ -39,17 +39,17 @@ const DashboardHeader = ({
           </PopoverTrigger>
 
           <PopoverContent 
-            className="p-0 border-2 border-[#9b87f5] rounded-xl bg-[#F1F0FB]/80 w-auto shadow-sm"
+            className="p-2 border-2 border-[#9b87f5] rounded-xl bg-[#F1F0FB]/80 w-auto shadow-sm"
             align="center"
             sideOffset={5}
           >
-            <div className="flex flex-col w-16">
+            <div className="flex flex-col gap-2 w-16">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button 
                       variant="ghost" 
-                      className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] p-3 h-16 w-16 flex items-center justify-center transition-colors rounded-none border-b border-[#9b87f5]" 
+                      className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] p-3 h-16 w-16 flex items-center justify-center transition-colors rounded-xl border-2 border-[#9b87f5]" 
                       onClick={() => {
                         console.log("Navigate to Home");
                         setOpen(false);
@@ -70,7 +70,7 @@ const DashboardHeader = ({
                   <TooltipTrigger asChild>
                     <Button 
                       variant="ghost" 
-                      className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] p-3 h-16 w-16 flex items-center justify-center transition-colors rounded-none border-b border-[#9b87f5]" 
+                      className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] p-3 h-16 w-16 flex items-center justify-center transition-colors rounded-xl border-2 border-[#9b87f5]" 
                       onClick={() => {
                         console.log("Navigate to My Interactions");
                         setOpen(false);
@@ -91,7 +91,7 @@ const DashboardHeader = ({
                   <TooltipTrigger asChild>
                     <Button 
                       variant="ghost" 
-                      className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] p-3 h-16 w-16 flex items-center justify-center transition-colors rounded-none" 
+                      className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] p-3 h-16 w-16 flex items-center justify-center transition-colors rounded-xl border-2 border-[#9b87f5]" 
                       onClick={() => {
                         console.log("Navigate to My Contacts");
                         setOpen(false);
