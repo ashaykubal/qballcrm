@@ -129,7 +129,7 @@ const DashboardHeader = ({
                     className="bg-white hover:bg-[#D6BCFA]/30 active:bg-[#D6BCFA] p-3 h-16 w-16 flex items-center justify-center transition-colors rounded-xl" 
                     aria-label="Add New"
                   >
-                    <Plus className="h-12 w-12 text-[#9b87f5]" />
+                    <Plus className="h-12 w-12 text-[#9b87f5] stroke-[3]" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
