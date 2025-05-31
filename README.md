@@ -1,8 +1,22 @@
-# Welcome to your Lovable project
+# QBall CRM
+
+A modern Customer Relationship Management system built with React, TypeScript, and Tailwind CSS.
+
+## 🚀 Live Demo
+
+**[Launch QBall CRM →](https://ashaykubal.github.io/qballcrm/)**
 
 ## Project info
 
 **URL**: https://lovable.dev/projects/19d9da30-347a-4d81-9945-1bcc519536a4
+
+## Features
+
+- **Dashboard**: Comprehensive overview of your CRM data
+- **Contact Management**: Organize and track customer interactions
+- **Modern UI**: Built with shadcn-ui components and Tailwind CSS
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
+- **Authentication**: Secure user management with Supabase
 
 ## How can I edit this code?
 
@@ -24,10 +38,10 @@ Follow these steps:
 
 ```sh
 # Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+git clone https://github.com/ashaykubal/qballcrm.git
 
 # Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+cd qballcrm
 
 # Step 3: Install the necessary dependencies.
 npm i
@@ -54,15 +68,27 @@ npm run dev
 
 This project is built with:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **Vite** - Fast build tool and development server
+- **React** - Modern JavaScript library for building user interfaces
+- **TypeScript** - Type-safe JavaScript development
+- **Tailwind CSS** - Utility-first CSS framework
+- **shadcn-ui** - Beautiful and accessible UI components
+- **Supabase** - Backend-as-a-Service for authentication and database
+- **React Router** - Client-side routing
+- **React Query** - Data fetching and state management
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/19d9da30-347a-4d81-9945-1bcc519536a4) and click on Share -> Publish.
+The project is automatically deployed to GitHub Pages when changes are pushed to the main branch.
+
+You can also deploy manually using:
+
+```sh
+npm run build
+npm run deploy
+```
+
+Simply open [Lovable](https://lovable.dev/projects/19d9da30-347a-4d81-9945-1bcc519536a4) and click on Share → Publish for alternative deployment options.
 
 ## Can I connect a custom domain to my Lovable project?
 
