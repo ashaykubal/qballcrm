@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,13 +22,13 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/home" element={<Index />} />
             <Route path="/about" element={<About />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
-            {/* Comment out the original Dashboard route and use DashboardDev instead */}
-            {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-            <Route path="/dashboard" element={<DashboardDev />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard-dev" element={<DashboardDev />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
