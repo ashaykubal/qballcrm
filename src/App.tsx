@@ -20,7 +20,7 @@ const App = () => (
       <AuthProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <BrowserRouter basename="/qballcrm">
           <Routes>
             <Route path="/" element={<DashboardDev />} />
             <Route path="/home" element={<Index />} />
