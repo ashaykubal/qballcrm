@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Sparkles } from "lucide-react";
+import { CalendarIcon, Sparkles, X } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -62,17 +62,36 @@ interface NewInteractionFormProps {
   onSuccess: () => void;
 }
 
+interface ClientAttendee {
+  id: string;
+  name: string;
+  clientName: string;
+  title: string;
+}
+
+interface InternalAttendee {
+  id: string;
+  name: string;
+  title: string;
+  department: string;
+}
+
 const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) => {
   const { toast } = useToast();
-  const [isDateRange, setIsDateRange] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [selectedClientAttendees, setSelectedClientAttendees] = useState<ClientAttendee[]>([]);
+  const [selectedInternalAttendees, setSelectedInternalAttendees] = useState<InternalAttendee[]>([]);
+  const [clientSearchTerm, setClientSearchTerm] = useState("");
+  const [internalSearchTerm, setInternalSearchTerm] = useState("");
+  const [showClientSuggestions, setShowClientSuggestions] = useState(false);
+  const [showInternalSuggestions, setShowInternalSuggestions] = useState(false);
   
   const form = useForm<InteractionFormData>({
     resolver: zodResolver(interactionSchema),
     defaultValues: {
       meetingType: "",
       meetingMethod: "",
-      startTime: new Date().toTimeString().slice(0, 5), // Current time in HH:MM format
+      startTime: new Date().toTimeString().slice(0, 5),
       duration: "1 hour",
       clientAttendees: "",
       internalAttendees: "",
@@ -81,15 +100,70 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
     },
   });
 
-  const watchedDate = form.watch("date");
-  const watchedDateRange = form.watch("dateRange");
-
-  // Check if date range is selected
   const hasDateRange = dateRange?.from && dateRange?.to && dateRange.from !== dateRange.to;
+
+  // Mock data for demonstration
+  const clientSuggestions: ClientAttendee[] = [
+    { id: "1", name: "John Smith", clientName: "ABC Investment Management", title: "Head of Equity Research" },
+    { id: "2", name: "Jack Black", clientName: "ABC Investment Management", title: "Senior Analyst" },
+    { id: "3", name: "Jane Austen", clientName: "XYZ Asset Management", title: "Portfolio Manager" },
+  ];
+
+  const internalSuggestions: InternalAttendee[] = [
+    { id: "1", name: "Mike Nash", title: "Portfolio Manager", department: "Equities" },
+    { id: "2", name: "Sarah Connor", title: "Senior Analyst", department: "Fixed Income" },
+    { id: "3", name: "David Miller", title: "Research Director", department: "Research" },
+  ];
+
+  const filteredClientSuggestions = clientSuggestions.filter(attendee =>
+    attendee.name.toLowerCase().includes(clientSearchTerm.toLowerCase()) ||
+    attendee.clientName.toLowerCase().includes(clientSearchTerm.toLowerCase())
+  );
+
+  const filteredInternalSuggestions = internalSuggestions.filter(attendee =>
+    attendee.name.toLowerCase().includes(internalSearchTerm.toLowerCase()) ||
+    attendee.title.toLowerCase().includes(internalSearchTerm.toLowerCase()) ||
+    attendee.department.toLowerCase().includes(internalSearchTerm.toLowerCase())
+  );
+
+  const handleClientAttendeeSelect = (attendee: ClientAttendee) => {
+    if (!selectedClientAttendees.find(a => a.id === attendee.id)) {
+      setSelectedClientAttendees([...selectedClientAttendees, attendee]);
+    }
+    setClientSearchTerm("");
+    setShowClientSuggestions(false);
+  };
+
+  const handleInternalAttendeeSelect = (attendee: InternalAttendee) => {
+    if (!selectedInternalAttendees.find(a => a.id === attendee.id)) {
+      setSelectedInternalAttendees([...selectedInternalAttendees, attendee]);
+    }
+    setInternalSearchTerm("");
+    setShowInternalSuggestions(false);
+  };
+
+  const removeClientAttendee = (id: string) => {
+    setSelectedClientAttendees(selectedClientAttendees.filter(a => a.id !== id));
+  };
+
+  const removeInternalAttendee = (id: string) => {
+    setSelectedInternalAttendees(selectedInternalAttendees.filter(a => a.id !== id));
+  };
+
+  const groupedClientAttendees = selectedClientAttendees.reduce((groups, attendee) => {
+    const clientName = attendee.clientName;
+    if (!groups[clientName]) {
+      groups[clientName] = [];
+    }
+    groups[clientName].push(attendee);
+    return groups;
+  }, {} as Record<string, ClientAttendee[]>);
 
   const onSubmit = async (data: InteractionFormData) => {
     try {
       console.log("Submitting interaction:", data);
+      console.log("Selected client attendees:", selectedClientAttendees);
+      console.log("Selected internal attendees:", selectedInternalAttendees);
       
       toast({
         title: "Success",
@@ -130,7 +204,10 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="placeholder">Meeting type options coming...</SelectItem>
+                          <SelectItem value="meeting-with-client">Meeting with Client</SelectItem>
+                          <SelectItem value="webinar-conference">Webinar/Conference</SelectItem>
+                          <SelectItem value="strategy-event-trip">Strategy Event/Trip</SelectItem>
+                          <SelectItem value="bespoke-work">Bespoke Work</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -151,7 +228,10 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="placeholder">Meeting method options coming...</SelectItem>
+                          <SelectItem value="call">Call</SelectItem>
+                          <SelectItem value="digital-meeting">Digital Meeting</SelectItem>
+                          <SelectItem value="in-person">In Person</SelectItem>
+                          <SelectItem value="electronic">Electronic</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -228,6 +308,7 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
                           type="time"
                           {...field}
                           disabled={hasDateRange}
+                          value={hasDateRange ? "00:00" : field.value}
                           className={hasDateRange ? "bg-gray-100 text-gray-400" : ""}
                         />
                       </FormControl>
@@ -244,7 +325,7 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
                       <FormLabel>Duration*</FormLabel>
                       <Select 
                         onValueChange={field.onChange} 
-                        defaultValue={field.value}
+                        value={hasDateRange ? "All Day" : field.value}
                         disabled={hasDateRange}
                       >
                         <FormControl>
@@ -283,10 +364,58 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
                   <FormItem>
                     <FormLabel>Client Attendee(s)*</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Start typing to look up client attendees"
-                        {...field}
-                      />
+                      <div className="space-y-2">
+                        <div className="relative">
+                          <Input
+                            placeholder="Start typing to look up client attendees"
+                            value={clientSearchTerm}
+                            onChange={(e) => {
+                              setClientSearchTerm(e.target.value);
+                              setShowClientSuggestions(e.target.value.length > 0);
+                            }}
+                            onFocus={() => setShowClientSuggestions(clientSearchTerm.length > 0)}
+                          />
+                          {showClientSuggestions && filteredClientSuggestions.length > 0 && (
+                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                              {filteredClientSuggestions.map((attendee) => (
+                                <div
+                                  key={attendee.id}
+                                  className="px-3 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-b-0"
+                                  onClick={() => handleClientAttendeeSelect(attendee)}
+                                >
+                                  <div className="font-semibold">{attendee.name}</div>
+                                  <div className="text-sm text-gray-600">{attendee.clientName} | {attendee.title}</div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Selected Client Attendees */}
+                        {Object.keys(groupedClientAttendees).length > 0 && (
+                          <div className="space-y-3 mt-4">
+                            {Object.entries(groupedClientAttendees).map(([clientName, attendees]) => (
+                              <div key={clientName} className="bg-gray-50 p-3 rounded-md">
+                                <div className="font-medium text-sm text-gray-700 mb-2">{clientName}</div>
+                                <div className="flex flex-wrap gap-2">
+                                  {attendees.map((attendee) => (
+                                    <div key={attendee.id} className="bg-white border border-gray-200 rounded-md px-3 py-1 flex items-center gap-2 text-sm">
+                                      <span>{attendee.name}</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => removeClientAttendee(attendee.id)}
+                                        className="text-gray-400 hover:text-gray-600"
+                                      >
+                                        <X className="h-3 w-3" />
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -300,10 +429,53 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
                   <FormItem>
                     <FormLabel>Internal Attendee(s)*</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Start typing to look up internal attendees"
-                        {...field}
-                      />
+                      <div className="space-y-2">
+                        <div className="relative">
+                          <Input
+                            placeholder="Start typing to look up internal attendees"
+                            value={internalSearchTerm}
+                            onChange={(e) => {
+                              setInternalSearchTerm(e.target.value);
+                              setShowInternalSuggestions(e.target.value.length > 0);
+                            }}
+                            onFocus={() => setShowInternalSuggestions(internalSearchTerm.length > 0)}
+                          />
+                          {showInternalSuggestions && filteredInternalSuggestions.length > 0 && (
+                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                              {filteredInternalSuggestions.map((attendee) => (
+                                <div
+                                  key={attendee.id}
+                                  className="px-3 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-b-0"
+                                  onClick={() => handleInternalAttendeeSelect(attendee)}
+                                >
+                                  <div className="font-semibold">{attendee.name}</div>
+                                  <div className="text-sm text-gray-600">{attendee.title} | {attendee.department}</div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Selected Internal Attendees */}
+                        {selectedInternalAttendees.length > 0 && (
+                          <div className="bg-gray-50 p-3 rounded-md mt-4">
+                            <div className="flex flex-wrap gap-2">
+                              {selectedInternalAttendees.map((attendee) => (
+                                <div key={attendee.id} className="bg-white border border-gray-200 rounded-md px-3 py-1 flex items-center gap-2 text-sm">
+                                  <span>{attendee.name}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => removeInternalAttendee(attendee.id)}
+                                    className="text-gray-400 hover:text-gray-600"
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -349,7 +521,7 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
                       />
                     </FormControl>
                     <div className="text-xs text-muted-foreground mt-1">
-                      0/32000 characters
+                      {field.value?.length || 0}/32000 characters
                     </div>
                     <FormMessage />
                   </FormItem>
