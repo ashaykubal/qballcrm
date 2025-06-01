@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Sparkles, X } from "lucide-react";
+import { CalendarIcon, Sparkles, X, Plus } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 
 const interactionSchema = z.object({
@@ -76,6 +77,12 @@ interface InternalAttendee {
   department: string;
 }
 
+interface Topic {
+  id: string;
+  name: string;
+  category: string;
+}
+
 const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) => {
   const { toast } = useToast();
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
@@ -85,6 +92,12 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
   const [internalSearchTerm, setInternalSearchTerm] = useState("");
   const [showClientSuggestions, setShowClientSuggestions] = useState(false);
   const [showInternalSuggestions, setShowInternalSuggestions] = useState(false);
+  const [identifiedTopics, setIdentifiedTopics] = useState<Topic[]>([]);
+  const [topicsIdentified, setTopicsIdentified] = useState(false);
+  const [isIdentifyingTopics, setIsIdentifyingTopics] = useState(false);
+  const [showAddTopicInput, setShowAddTopicInput] = useState(false);
+  const [newTopicName, setNewTopicName] = useState("");
+  const [newTopicCategory, setNewTopicCategory] = useState("");
   
   const form = useForm<InteractionFormData>({
     resolver: zodResolver(interactionSchema),
@@ -101,6 +114,7 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
   });
 
   const hasDateRange = dateRange?.from && dateRange?.to && dateRange.from !== dateRange.to;
+  const meetingNotes = form.watch("meetingNotes");
 
   // Mock data for demonstration
   const clientSuggestions: ClientAttendee[] = [
@@ -159,11 +173,95 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
     return groups;
   }, {} as Record<string, ClientAttendee[]>);
 
+  const handleIdentifyTopics = async () => {
+    if (!meetingNotes.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter meeting notes before identifying topics.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsIdentifyingTopics(true);
+    
+    try {
+      // Simulate AI processing with mock data based on the example
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      const mockTopics: Topic[] = [
+        { id: "1", name: "AAPL", category: "Companies" },
+        { id: "2", name: "GOOG", category: "Companies" },
+        { id: "3", name: "Technology", category: "Industries & Sectors" },
+      ];
+      
+      setIdentifiedTopics(mockTopics);
+      setTopicsIdentified(true);
+      
+      toast({
+        title: "Topics Identified",
+        description: "AI has successfully identified topics from your meeting notes.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to identify topics. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsIdentifyingTopics(false);
+    }
+  };
+
+  const removeTopic = (topicId: string) => {
+    setIdentifiedTopics(identifiedTopics.filter(topic => topic.id !== topicId));
+  };
+
+  const handleAddManualTopic = () => {
+    if (!newTopicName.trim() || !newTopicCategory.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter both topic name and category.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newTopic: Topic = {
+      id: Date.now().toString(),
+      name: newTopicName,
+      category: newTopicCategory,
+    };
+
+    setIdentifiedTopics([...identifiedTopics, newTopic]);
+    setNewTopicName("");
+    setNewTopicCategory("");
+    setShowAddTopicInput(false);
+  };
+
+  const groupedTopics = identifiedTopics.reduce((groups, topic) => {
+    if (!groups[topic.category]) {
+      groups[topic.category] = [];
+    }
+    groups[topic.category].push(topic);
+    return groups;
+  }, {} as Record<string, Topic[]>);
+
   const onSubmit = async (data: InteractionFormData) => {
+    if (!topicsIdentified) {
+      toast({
+        title: "Error",
+        description: "Please identify topics before submitting the interaction.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       console.log("Submitting interaction:", data);
       console.log("Selected client attendees:", selectedClientAttendees);
       console.log("Selected internal attendees:", selectedInternalAttendees);
+      console.log("Identified topics:", identifiedTopics);
       
       toast({
         title: "Success",
@@ -529,11 +627,105 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
               />
 
               <div className="flex justify-end">
-                <Button type="button" variant="outline" size="sm" className="flex items-center gap-2">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-2"
+                  onClick={handleIdentifyTopics}
+                  disabled={isIdentifyingTopics || !meetingNotes.trim()}
+                >
                   <Sparkles className="h-4 w-4" />
-                  Identify Topics
+                  {isIdentifyingTopics ? "Identifying..." : "Identify Topics"}
                 </Button>
               </div>
+
+              {/* AI Identified Topics Section */}
+              {topicsIdentified && (
+                <div className="mt-6 p-4 bg-blue-50 rounded-lg border">
+                  <p className="text-sm text-orange-600 mb-4">
+                    These topics were identified via AI. Please verify before submitting the interaction.
+                  </p>
+                  
+                  {Object.keys(groupedTopics).length > 0 ? (
+                    <div className="space-y-4">
+                      {Object.entries(groupedTopics).map(([category, topics]) => (
+                        <div key={category}>
+                          <h4 className="font-medium text-sm text-gray-700 mb-2">{category}</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {topics.map((topic) => (
+                              <Badge key={topic.id} variant="outline" className="flex items-center gap-1">
+                                {topic.name}
+                                <button
+                                  type="button"
+                                  onClick={() => removeTopic(topic.id)}
+                                  className="ml-1 text-gray-400 hover:text-gray-600"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500">No topics identified.</p>
+                  )}
+
+                  {/* Add Manual Topic Section */}
+                  <div className="mt-4">
+                    {showAddTopicInput ? (
+                      <div className="space-y-3 p-3 bg-white rounded border">
+                        <div className="grid grid-cols-2 gap-2">
+                          <Input
+                            placeholder="Topic name"
+                            value={newTopicName}
+                            onChange={(e) => setNewTopicName(e.target.value)}
+                          />
+                          <Input
+                            placeholder="Category"
+                            value={newTopicCategory}
+                            onChange={(e) => setNewTopicCategory(e.target.value)}
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            type="button"
+                            size="sm"
+                            onClick={handleAddManualTopic}
+                          >
+                            Add Topic
+                          </Button>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setShowAddTopicInput(false);
+                              setNewTopicName("");
+                              setNewTopicCategory("");
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowAddTopicInput(true)}
+                        className="flex items-center gap-2"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Add Manually
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
             </AccordionContent>
           </AccordionItem>
         </Accordion>
@@ -542,7 +734,11 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button type="submit">
+          <Button 
+            type="submit"
+            disabled={!topicsIdentified}
+            className={!topicsIdentified ? "opacity-50 cursor-not-allowed" : ""}
+          >
             Submit
           </Button>
         </div>
