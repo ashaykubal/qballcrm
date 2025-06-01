@@ -4,6 +4,7 @@ import { Building, FileText, Plus, User } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import MenuButton from "./MenuButton";
 import NewCompanyDrawer from "@/components/forms/NewCompanyDrawer";
+import NewInteractionDrawer from "@/components/forms/NewInteractionDrawer";
 
 const AddMenu = () => {
   const [openAdd, setOpenAdd] = useState(false);
@@ -19,6 +20,12 @@ const AddMenu = () => {
         onClose={() => setOpenNewCompanyDrawer(false)} 
       />
       
+      {/* New Interaction Drawer */}
+      <NewInteractionDrawer 
+        isOpen={openNewInteractionDrawer} 
+        onClose={() => setOpenNewInteractionDrawer(false)} 
+      />
+      
       {/* Add Menu Popover */}
       <Popover open={openAdd} onOpenChange={setOpenAdd}>
         <PopoverTrigger asChild>
@@ -27,7 +34,7 @@ const AddMenu = () => {
               icon={Plus} 
               label="Add New"
               className="rounded-xl"
-              isDropdownTrigger={true} // Set to true for dropdown triggers
+              isDropdownTrigger={true}
               onClick={() => {}}
             />
           </div>
@@ -65,7 +72,7 @@ const AddMenu = () => {
               onClick={() => {
                 console.log("Create New Interaction");
                 setOpenAdd(false);
-                // Uncomment when implementing: setOpenNewInteractionDrawer(true);
+                setOpenNewInteractionDrawer(true);
               }}
             />
           </div>
