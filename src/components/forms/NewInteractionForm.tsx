@@ -474,7 +474,7 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
                             onFocus={() => setShowClientSuggestions(clientSearchTerm.length > 0)}
                           />
                           {showClientSuggestions && filteredClientSuggestions.length > 0 && (
-                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
                               {filteredClientSuggestions.map((attendee) => (
                                 <div
                                   key={attendee.id}
@@ -539,7 +539,7 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
                             onFocus={() => setShowInternalSuggestions(internalSearchTerm.length > 0)}
                           />
                           {showInternalSuggestions && filteredInternalSuggestions.length > 0 && (
-                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
                               {filteredInternalSuggestions.map((attendee) => (
                                 <div
                                   key={attendee.id}
@@ -642,7 +642,7 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
 
               {/* AI Identified Topics Section */}
               {topicsIdentified && (
-                <div className="mt-6 p-4 bg-blue-50 rounded-lg border">
+                <div className="mt-6 p-4 bg-gray-50 rounded-md">
                   <p className="text-sm text-orange-600 mb-4">
                     These topics were identified via AI. Please verify before submitting the interaction.
                   </p>
@@ -654,16 +654,16 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
                           <h4 className="font-medium text-sm text-gray-700 mb-2">{category}</h4>
                           <div className="flex flex-wrap gap-2">
                             {topics.map((topic) => (
-                              <Badge key={topic.id} variant="outline" className="flex items-center gap-1">
-                                {topic.name}
+                              <div key={topic.id} className="bg-white border border-gray-200 rounded-md px-3 py-1 flex items-center gap-2 text-sm">
+                                <span>{topic.name}</span>
                                 <button
                                   type="button"
                                   onClick={() => removeTopic(topic.id)}
-                                  className="ml-1 text-gray-400 hover:text-gray-600"
+                                  className="text-gray-400 hover:text-gray-600"
                                 >
                                   <X className="h-3 w-3" />
                                 </button>
-                              </Badge>
+                              </div>
                             ))}
                           </div>
                         </div>
