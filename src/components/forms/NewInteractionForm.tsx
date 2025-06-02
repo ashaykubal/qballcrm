@@ -131,7 +131,7 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
           </AccordionItem>
         </Accordion>
 
-        <div className="flex justify-end gap-3 pt-3 border-t">
+        <div className="flex justify-end gap-3 pt-3">
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
           </Button>
