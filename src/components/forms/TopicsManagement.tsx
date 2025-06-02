@@ -136,7 +136,7 @@ const TopicsManagement = ({
         <div className="space-y-3">
           <Card className="bg-gray-50">
             <CardContent className="p-3">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-2">
                 <FormLabel className="text-base font-medium">Topics</FormLabel>
                 <TooltipProvider>
                   <Tooltip>
@@ -173,7 +173,7 @@ const TopicsManagement = ({
                   </div>
                 </div>
               ) : Object.keys(groupedTopics).length > 0 ? (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {Object.entries(groupedTopics).map(([category, topics]) => (
                     <div key={category}>
                       <h4 className="font-medium text-sm text-gray-700 mb-2">{category}</h4>
@@ -194,7 +194,7 @@ const TopicsManagement = ({
                     </div>
                   ))}
                   
-                  <div className="flex justify-end gap-2 pt-2">
+                  <div className="flex justify-end gap-2">
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
