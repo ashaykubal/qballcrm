@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Sparkles, Plus, X, Info, ThumbsUp, ThumbsDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ const TopicsManagement = ({
   const [showAddTopicInput, setShowAddTopicInput] = useState(false);
   const [newTopicName, setNewTopicName] = useState("");
   const [newTopicCategory, setNewTopicCategory] = useState("");
+  const [identificationError, setIdentificationError] = useState(false);
 
   const handleIdentifyTopics = async () => {
     if (!meetingNotes.trim()) {
@@ -41,6 +43,7 @@ const TopicsManagement = ({
     }
 
     setIsIdentifyingTopics(true);
+    setIdentificationError(false);
     
     try {
       // Simulate AI processing with mock data based on the example
@@ -54,12 +57,10 @@ const TopicsManagement = ({
       
       setIdentifiedTopics(mockTopics);
       setTopicsIdentified(true);
-      
-      toast({
-        title: "Topics Identified",
-        description: "AI has successfully identified topics from your meeting notes.",
-      });
+      setIdentificationError(false);
     } catch (error) {
+      setIdentificationError(true);
+      setTopicsIdentified(true);
       toast({
         title: "Error",
         description: "Failed to identify topics. Please try again.",
@@ -94,6 +95,7 @@ const TopicsManagement = ({
     setNewTopicName("");
     setNewTopicCategory("");
     setShowAddTopicInput(false);
+    setIdentificationError(false);
   };
 
   const groupedTopics = identifiedTopics.reduce((groups, topic) => {
@@ -133,8 +135,8 @@ const TopicsManagement = ({
       {topicsIdentified && (
         <div className="space-y-3">
           <Card className="bg-gray-50">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-4">
+            <CardContent className="p-3">
+              <div className="flex items-center justify-between mb-3">
                 <FormLabel className="text-base font-medium">Topics</FormLabel>
                 <TooltipProvider>
                   <Tooltip>
@@ -151,8 +153,27 @@ const TopicsManagement = ({
                 </TooltipProvider>
               </div>
               
-              {Object.keys(groupedTopics).length > 0 ? (
-                <div className="space-y-4">
+              {identificationError ? (
+                <div className="space-y-3">
+                  <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md border border-red-200">
+                    <p className="font-medium mb-1">Unable to identify topics automatically</p>
+                    <p>There was an error processing your meeting notes. Please add topics manually using the button below.</p>
+                  </div>
+                  <div className="flex justify-center">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowAddTopicInput(true)}
+                      className="flex items-center gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add Topics Manually
+                    </Button>
+                  </div>
+                </div>
+              ) : Object.keys(groupedTopics).length > 0 ? (
+                <div className="space-y-3">
                   {Object.entries(groupedTopics).map(([category, topics]) => (
                     <div key={category}>
                       <h4 className="font-medium text-sm text-gray-700 mb-2">{category}</h4>
@@ -173,7 +194,7 @@ const TopicsManagement = ({
                     </div>
                   ))}
                   
-                  <div className="flex justify-end gap-2 pt-3">
+                  <div className="flex justify-end gap-2 pt-2">
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -220,55 +241,59 @@ const TopicsManagement = ({
           </Card>
 
           {/* Add Manual Topic Section */}
-          {showAddTopicInput ? (
-            <div className="space-y-3 p-3 bg-white rounded border">
-              <div className="grid grid-cols-2 gap-2">
-                <Input
-                  placeholder="Topic name"
-                  value={newTopicName}
-                  onChange={(e) => setNewTopicName(e.target.value)}
-                />
-                <Input
-                  placeholder="Category"
-                  value={newTopicCategory}
-                  onChange={(e) => setNewTopicCategory(e.target.value)}
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={handleAddManualTopic}
-                >
-                  Add Topic
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    setShowAddTopicInput(false);
-                    setNewTopicName("");
-                    setNewTopicCategory("");
-                  }}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex justify-end">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setShowAddTopicInput(true)}
-                className="flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Add Manually
-              </Button>
-            </div>
+          {!identificationError && (
+            <>
+              {showAddTopicInput ? (
+                <div className="space-y-3 p-3 bg-white rounded border">
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input
+                      placeholder="Topic name"
+                      value={newTopicName}
+                      onChange={(e) => setNewTopicName(e.target.value)}
+                    />
+                    <Input
+                      placeholder="Category"
+                      value={newTopicCategory}
+                      onChange={(e) => setNewTopicCategory(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={handleAddManualTopic}
+                    >
+                      Add Topic
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setShowAddTopicInput(false);
+                        setNewTopicName("");
+                        setNewTopicCategory("");
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex justify-end">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowAddTopicInput(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Manually
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
