@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Sparkles, Plus, X, Info, ThumbsUp, ThumbsDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -174,7 +173,7 @@ const TopicsManagement = ({
                     </div>
                   ))}
                   
-                  <div className="flex justify-end gap-2 pt-3 border-t border-gray-200">
+                  <div className="flex justify-end gap-2 pt-3">
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
