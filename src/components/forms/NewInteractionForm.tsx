@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -132,7 +131,7 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
           </AccordionItem>
         </Accordion>
 
-        <div className="flex justify-end gap-3 pt-6 border-t">
+        <div className="flex justify-end gap-3 pt-3 border-t">
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
           </Button>
