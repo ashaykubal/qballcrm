@@ -482,7 +482,15 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
                               <div
                                 key={attendee.id}
                                 className="px-3 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-b-0"
-                                onClick={() => handleClientAttendeeSelect(attendee)}
+                                onMouseDown={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleClientAttendeeSelect(attendee);
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                }}
                               >
                                 <div className="font-semibold">{attendee.name}</div>
                                 <div className="text-sm text-gray-600">{attendee.clientName} | {attendee.title}</div>
@@ -546,7 +554,15 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
                               <div
                                 key={attendee.id}
                                 className="px-3 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-b-0"
-                                onClick={() => handleInternalAttendeeSelect(attendee)}
+                                onMouseDown={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleInternalAttendeeSelect(attendee);
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                }}
                               >
                                 <div className="font-semibold">{attendee.name}</div>
                                 <div className="text-sm text-gray-600">{attendee.title} | {attendee.department}</div>

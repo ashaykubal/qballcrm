@@ -22,16 +22,28 @@ const PortalDropdown = ({ isOpen, children, triggerRef }: PortalDropdownProps) =
     }
   }, [isOpen, triggerRef]);
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   if (!isOpen) return null;
 
   return createPortal(
     <div
-      className="fixed z-[100] bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto"
+      className="fixed z-[100] bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto pointer-events-auto"
       style={{
         top: position.top,
         left: position.left,
         width: position.width,
       }}
+      onMouseDown={handleMouseDown}
+      onClick={handleClick}
     >
       {children}
     </div>,
