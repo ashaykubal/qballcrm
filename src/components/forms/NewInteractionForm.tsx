@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -37,8 +36,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import PortalDropdown from "./PortalDropdown";
 
 const interactionSchema = z.object({
   meetingType: z.string().min(1, "Meeting type is required"),
@@ -98,6 +97,10 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
   const [showAddTopicInput, setShowAddTopicInput] = useState(false);
   const [newTopicName, setNewTopicName] = useState("");
   const [newTopicCategory, setNewTopicCategory] = useState("");
+  
+  // Add refs for the input elements
+  const clientInputRef = useRef<HTMLInputElement>(null);
+  const internalInputRef = useRef<HTMLInputElement>(null);
   
   const form = useForm<InteractionFormData>({
     resolver: zodResolver(interactionSchema),
@@ -465,6 +468,7 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
                       <div className="space-y-2">
                         <div className="relative">
                           <Input
+                            ref={clientInputRef}
                             placeholder="Start typing to look up client attendees"
                             value={clientSearchTerm}
                             onChange={(e) => {
@@ -473,20 +477,18 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
                             }}
                             onFocus={() => setShowClientSuggestions(clientSearchTerm.length > 0)}
                           />
-                          {showClientSuggestions && filteredClientSuggestions.length > 0 && (
-                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                              {filteredClientSuggestions.map((attendee) => (
-                                <div
-                                  key={attendee.id}
-                                  className="px-3 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-b-0"
-                                  onClick={() => handleClientAttendeeSelect(attendee)}
-                                >
-                                  <div className="font-semibold">{attendee.name}</div>
-                                  <div className="text-sm text-gray-600">{attendee.clientName} | {attendee.title}</div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                          <PortalDropdown isOpen={showClientSuggestions && filteredClientSuggestions.length > 0} triggerRef={clientInputRef}>
+                            {filteredClientSuggestions.map((attendee) => (
+                              <div
+                                key={attendee.id}
+                                className="px-3 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-b-0"
+                                onClick={() => handleClientAttendeeSelect(attendee)}
+                              >
+                                <div className="font-semibold">{attendee.name}</div>
+                                <div className="text-sm text-gray-600">{attendee.clientName} | {attendee.title}</div>
+                              </div>
+                            ))}
+                          </PortalDropdown>
                         </div>
                         
                         {/* Selected Client Attendees */}
@@ -530,6 +532,7 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
                       <div className="space-y-2">
                         <div className="relative">
                           <Input
+                            ref={internalInputRef}
                             placeholder="Start typing to look up internal attendees"
                             value={internalSearchTerm}
                             onChange={(e) => {
@@ -538,20 +541,18 @@ const NewInteractionForm = ({ onCancel, onSuccess }: NewInteractionFormProps) =>
                             }}
                             onFocus={() => setShowInternalSuggestions(internalSearchTerm.length > 0)}
                           />
-                          {showInternalSuggestions && filteredInternalSuggestions.length > 0 && (
-                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                              {filteredInternalSuggestions.map((attendee) => (
-                                <div
-                                  key={attendee.id}
-                                  className="px-3 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-b-0"
-                                  onClick={() => handleInternalAttendeeSelect(attendee)}
-                                >
-                                  <div className="font-semibold">{attendee.name}</div>
-                                  <div className="text-sm text-gray-600">{attendee.title} | {attendee.department}</div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                          <PortalDropdown isOpen={showInternalSuggestions && filteredInternalSuggestions.length > 0} triggerRef={internalInputRef}>
+                            {filteredInternalSuggestions.map((attendee) => (
+                              <div
+                                key={attendee.id}
+                                className="px-3 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-b-0"
+                                onClick={() => handleInternalAttendeeSelect(attendee)}
+                              >
+                                <div className="font-semibold">{attendee.name}</div>
+                                <div className="text-sm text-gray-600">{attendee.title} | {attendee.department}</div>
+                              </div>
+                            ))}
+                          </PortalDropdown>
                         </div>
                         
                         {/* Selected Internal Attendees */}
